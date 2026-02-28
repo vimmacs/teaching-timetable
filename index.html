@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>可排课时间表</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    @media (min-width: 992px) {
+      .cols-lg-7 > * {
+        flex: 0 0 auto;
+        width: 14.285714%;
+      }
+    }
+    .time-slot { transition: all 0.2s ease-in-out; }
+    .time-slot:hover { transform: scale(1.02); filter: brightness(0.95); }
+    
+    .sticky-header-wrapper {
+      background-color: var(--bs-body-bg);
+      top: 0;
+    }
+  </style>
+</head>
+<body class="bg-body-tertiary py-4">
+  
+  <div class="container-fluid max-w-7xl px-4">
+    <h1 class="text-center text-body fw-bold mb-3">2025-2026年度第二学期可排课时间</h1>
+    <p class="text-danger fw-bold text-center mb-4 fs-5">
+      如果您有任何课程安排，请立即与吴老师联系。
+    </p>
+  </div>
+
+  <div class="sticky-top sticky-header-wrapper z-3 shadow-sm border-bottom pb-3 mb-4 pt-2">
+    <div class="container-fluid max-w-7xl px-4">
+      
+      <div class="row align-items-center mb-3">
+        <div class="col-6 text-start">
+          <h2 class="h6 mb-0 text-body">
+            此时间表更新于 <span class="fw-bold text-primary">2月28日上午9:30分。</span>
+          </h2>
+        </div>
+        
+        <div class="col-6 text-end">
+          <button id="theme-toggle" class="btn btn-sm btn-outline-secondary rounded-pill fw-medium">
+            🌙 暗色模式
+          </button>
+        </div>
+      </div>
+
+      <div class="d-flex flex-wrap justify-content-center gap-4 text-body-secondary small fw-medium">
+        <div class="d-flex align-items-center gap-2">
+          <div class="border border-success bg-success-subtle rounded" style="width: 20px; height: 20px;"></div>
+          <span>空闲 (可排课)</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <div class="border border-warning bg-warning-subtle rounded" style="width: 20px; height: 20px;"></div>
+          <span>待定 / 等候通知</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <div class="border border-danger bg-danger-subtle rounded" style="width: 20px; height: 20px;"></div>
+          <span>已满 / 已排课</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="container-fluid max-w-7xl px-4">
+    <div id="schedule-container" class="d-flex flex-column gap-4"></div>
+
+    <div class="text-center mt-5 mb-3 pb-4 pt-4 border-top">
+      <p class="fs-4 fw-bold text-primary mb-2">🎉 欢迎提前预约 2026 年暑假排课！</p>
+      <p class="text-body-secondary small mb-0 mt-3">
+        欢迎访问！当前时间是 <span id="live-clock" class="fw-bold font-monospace text-body"></span>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // --- 深浅色主题切换逻辑 ---
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const htmlElement = document.documentElement;
+
+    themeToggleBtn.addEventListener('click', () => {
+      const currentTheme = htmlElement.getAttribute('data-bs-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      htmlElement.setAttribute('data-bs-theme', newTheme);
+      
+      if (newTheme === 'dark') {
+        themeToggleBtn.innerHTML = '☀️ 亮色模式';
+        themeToggleBtn.classList.replace('btn-outline-secondary', 'btn-outline-light');
+      } else {
+        themeToggleBtn.innerHTML = '🌙 暗色模式';
+        themeToggleBtn.classList.replace('btn-outline-light', 'btn-outline-secondary');
+      }
+    });
+
+    // --- 实时时钟逻辑 ---
+    function updateClock() {
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const hh = String(now.getHours()).padStart(2, '0');
+      const min = String(now.getMinutes()).padStart(2, '0');
+      const ss = String(now.getSeconds()).padStart(2, '0');
+      
+      const clockEl = document.getElementById('live-clock');
+      if(clockEl) clockEl.textContent = `${yyyy}年${mm}月${dd}日, ${hh}:${min}:${ss}`;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // --- 基础时间模板 ---
+    const weekdayTemplate = [
+      { time: "08:00 - 10:00", status: "空闲" },
+      { time: "10:00 - 12:00", status: "空闲" },
+      { time: "14:00 - 16:00", status: "待定" },
+      { time: "16:00 - 18:00", status: "已排课" },
+      { time: "19:30 - 21:30", status: "已排课" }
+    ];
+
+    const saturdayTemplate = [
+      { time: "08:00 - 10:00", status: "空闲" },
+      { time: "10:00 - 12:00", status: "空闲" },
+      { time: "14:00 - 16:00", status: "待定" },
+      { time: "16:00 - 18:00", status: "空闲" },   
+      { time: "19:30 - 21:30", status: "空闲" }    
+    ];
+
+    const sundayTemplate = [
+      { time: "08:00 - 10:00", status: "空闲" },
+      { time: "10:00 - 12:00", status: "空闲" },
+      { time: "13:00 - 15:00", status: "已排课" },
+      { time: "15:00 - 17:00", status: "已排课" },
+      { time: "17:00 - 19:00", status: "已排课" },
+      { time: "19:30 - 21:30", status: "空闲" }    
+    ];
+
+    const holidays2026 = [
+      "4-4", "4-5", "4-6",
+      "5-1", "5-2", "5-3", "5-4", "5-5",
+      "6-19", "6-20", "6-21"
+    ];
+
+    // --- 生成数据逻辑 ---
+    const scheduleData = [];
+    let currentDate = new Date(2026, 2, 2);   
+    let endDate = new Date(2026, 5, 28);      
+
+    const dayNames = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
+
+    while (currentDate <= endDate) {
+      let weekDays = [];
+      let weekStartStr = `${currentDate.getMonth() + 1}月${currentDate.getDate()}日`;
+      
+      for (let i = 0; i < 7; i++) {
+        let month = currentDate.getMonth() + 1;
+        let date = currentDate.getDate();
+        let dayOfWeek = currentDate.getDay();
+        let dateStr = `${month}-${date}`;
+        
+        let slots;
+        if (dayOfWeek === 0) {
+          slots = JSON.parse(JSON.stringify(sundayTemplate));
+        } else if (dayOfWeek === 6) {
+          slots = JSON.parse(JSON.stringify(saturdayTemplate));
+        } else {
+          slots = JSON.parse(JSON.stringify(weekdayTemplate));
+        }
+        
+        let isHoliday = holidays2026.includes(dateStr);
+        if (isHoliday) {
+          slots.forEach(slot => slot.status = "待定");
+        }
+        
+        weekDays.push({
+          dateLabel: `${month}月${date}日`,
+          dayName: dayNames[dayOfWeek],
+          isHoliday: isHoliday,
+          slots: slots
+        });
+        
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+      
+      let lastDayOfWeek = new Date(currentDate);
+      lastDayOfWeek.setDate(lastDayOfWeek.getDate() - 1);
+      let weekEndStr = `${lastDayOfWeek.getMonth() + 1}月${lastDayOfWeek.getDate()}日`;
+      
+      scheduleData.push({
+        weekTitle: `${weekStartStr}（星期一）至 ${weekEndStr}（周日）`,
+        days: weekDays
+      });
+    }
+
+    // --- 渲染页面逻辑 ---
+    const container = document.getElementById('schedule-container');
+    
+    container.innerHTML = scheduleData.map(week => `
+      <div class="bg-body rounded-4 shadow-sm border p-3 p-md-4">
+        <h3 class="h5 fw-bold text-primary mb-3 pb-2 border-bottom">
+          🗓️ ${week.weekTitle}
+        </h3>
+        
+        <div class="row row-cols-1 cols-lg-7 g-3">
+          ${week.days.map(dayData => `
+            <div class="col">
+              <div class="card h-100 border ${dayData.isHoliday ? 'border-warning' : 'border-secondary-subtle'} bg-body-tertiary rounded-3 overflow-hidden">
+                <div class="card-header ${dayData.isHoliday ? 'bg-warning-subtle' : 'bg-body'} text-center border-bottom py-2">
+                  <div class="fw-bold text-body d-flex justify-content-center align-items-center gap-1" style="font-size: 1.05rem;">
+                    ${dayData.dateLabel}
+                  </div>
+                  <div class="text-body-secondary small fw-medium mt-1">
+                    ${dayData.dayName}
+                    ${dayData.isHoliday ? '<span class="badge bg-danger text-white ms-1" style="font-size: 0.65rem;">节假日</span>' : ''}
+                  </div>
+                </div>
+                
+                <div class="card-body d-flex flex-column gap-2 p-2">
+                  ${dayData.slots.map(slot => {
+                    let statusClass = "";
+                    if (slot.status === '空闲') {
+                      statusClass = "bg-success-subtle border-success text-success-emphasis";
+                    } else if (slot.status === '待定') {
+                      statusClass = "bg-warning-subtle border-warning text-warning-emphasis";
+                    } else if (slot.status === '已排课') {
+                      statusClass = "bg-danger-subtle border-danger text-danger";
+                    }
+
+                    return `
+                      <div class="time-slot p-2 rounded text-center fw-bold border small ${statusClass}">
+                        ${slot.time}
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+  </script>
+</body>
+</html>
