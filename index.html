@@ -12,35 +12,136 @@
         width: 14.285714%;
       }
     }
-    .time-slot { transition: all 0.2s ease-in-out; }
-    .time-slot:hover { transform: scale(1.02); filter: brightness(0.95); }
     
+    /* 吸顶容器的背景色，与页面底色完全一致，消除断层缝隙 */
     .sticky-header-wrapper {
       background-color: var(--bs-body-bg);
       top: 0;
     }
+
+    /* 基础悬浮放大效果 */
+    .hover-scale { transition: all 0.2s ease-in-out; cursor: pointer; }
+    .hover-scale:hover { transform: scale(1.02); filter: brightness(0.95); }
+
+    /* 按周高亮大卡片的交互逻辑 */
+    .week-card {
+      transition: background-color 0.4s ease, box-shadow 0.4s ease;
+    }
+    .week-card:hover {
+      background-color: var(--bs-secondary-bg) !important;
+      box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.08) !important;
+    }
+
+    /* 3D翻转卡片的核心 CSS */
+    .flip-container {
+      perspective: 1000px;
+    }
+    .flip-inner {
+      position: relative;
+      width: 100%;
+      transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); 
+      transform-style: preserve-3d;
+    }
+    .flip-container:hover .flip-inner {
+      transform: rotateY(180deg);
+    }
+    .flip-front, .flip-back {
+      width: 100%;
+      backface-visibility: hidden;
+    }
+    .flip-back {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      transform: rotateY(180deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 个人简介区域样式 */
+    .intro-fieldset {
+      border: 2px dotted var(--bs-border-color);
+      border-radius: 0.5rem;
+      background-color: var(--bs-tertiary-bg); 
+      transition: background-color 0.3s ease; 
+      padding: 0 1.5rem 1rem 1.5rem;
+    }
+    .intro-fieldset:hover {
+      background-color: var(--bs-secondary-bg);
+    }
+    .intro-legend {
+      width: auto;
+      padding: 0 10px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: var(--bs-primary);
+      margin-bottom: 0;
+      float: none;
+    }
+
+    /* 回到顶部按钮样式 */
+    #scrollToTopBtn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: bold;
+      z-index: 1050;
+      opacity: 0;
+      transform: translateY(20px);
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.2s ease;
+    }
+    #scrollToTopBtn.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
   </style>
 </head>
-<body class="bg-body-tertiary py-4">
+<body class="bg-body py-4">
   
   <div class="container-fluid max-w-7xl px-4">
-    <h1 class="text-center text-body fw-bold mb-3">2025-2026年度第二学期可排课时间</h1>
-    <p class="text-danger fw-bold text-center mb-4 fs-5">
-      如果您需要排课，请立即与我联系。
+    <h1 class="text-center text-body fw-bold mb-3 mt-2">2025-2026年度第二学期可排课时间</h1>
+    <p class="text-danger fw-bold text-center mb-5 pb-4 fs-5">
+      如果您有任何课程安排，请立即与我联系。
     </p>
   </div>
 
   <div class="sticky-top sticky-header-wrapper z-3 shadow-sm border-bottom pb-3 mb-4 pt-2">
     <div class="container-fluid max-w-7xl px-4">
       
+      <div class="text-center mb-4">
+        <fieldset class="intro-fieldset text-center shadow-sm">
+          <legend class="intro-legend">ℹ️ 说明</legend>
+          <div class="d-inline-block text-start">
+            <ol class="mb-0 ps-3 text-body-secondary small lh-lg">
+              <li>我专注于高考与高中教学辅导，其次也带少量中考与初二学生。</li>
+              <li>我的教学带有明显的个人风格，自创概念术语，自创模型，应试性强，故存在“对高一学生讲授的学习方法跟对高三学生讲授的学习方法完全不同甚至截然相反”的情形，此乃正常。</li>
+              <li>与其他老师一样，有学生喜欢我，就一定有学生不喜欢我，此亦正常。只是，我带不了“主观上自己不愿意学好英语”的学生。</li>
+              <li>截至2026年3月1日，我与八家机构有达成初步合作意向，如您有排课需求，请尽早联系我，过之不候。</li>
+              <li>本排课表的时间可以协商微调。既然能访问这个排课表，您知道我是谁、如何联系我。</li>
+            </ol>
+          </div>
+        </fieldset>
+      </div>
+
       <div class="row align-items-center mb-3">
-        <div class="col-6 text-start">
+        <div class="col-8 col-md-6 text-start">
           <h2 class="h6 mb-0 text-body">
-            此时间表更新于 <span class="fw-bold text-primary">2026年3月1日上午10点30分。</span>
+            此排课表更新于 <span id="auto-update-time" class="fw-bold text-primary">获取中...</span>
           </h2>
         </div>
         
-        <div class="col-6 text-end">
+        <div class="col-4 col-md-6 text-end">
           <button id="theme-toggle" class="btn btn-sm btn-outline-secondary rounded-pill fw-medium">
             🌙 暗色模式
           </button>
@@ -76,6 +177,10 @@
     </div>
   </div>
 
+  <button id="scrollToTopBtn" class="btn btn-primary shadow" title="回到顶部">
+    ↑
+  </button>
+
   <script>
     // --- 深浅色主题切换逻辑 ---
     const themeToggleBtn = document.getElementById('theme-toggle');
@@ -95,6 +200,35 @@
       }
     });
 
+    // --- 回到顶部按钮逻辑 ---
+    const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        scrollToTopBtn.classList.add('show');
+      } else {
+        scrollToTopBtn.classList.remove('show');
+      }
+    });
+    scrollToTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // --- 自动获取页面最后更新时间 ---
+    function setAutoUpdateTime() {
+      const lastModified = new Date(document.lastModified);
+      const month = lastModified.getMonth() + 1;
+      const date = lastModified.getDate();
+      const hours = String(lastModified.getHours()).padStart(2, '0');
+      const minutes = String(lastModified.getMinutes()).padStart(2, '0');
+      
+      const timeString = `${month}月${date}日 ${hours}点${minutes}分`;
+      const updateEl = document.getElementById('auto-update-time');
+      if(updateEl) {
+        updateEl.textContent = timeString;
+      }
+    }
+    setAutoUpdateTime();
+
     // --- 实时时钟逻辑 ---
     function updateClock() {
       const now = new Date();
@@ -111,31 +245,37 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    // --- 1. 基础时间模板 ---
+    // --- 1. 独立时间模板 ---
+
+    // A. 周一至周五 (已移除12-14点，16-18点和19-21点改为待定)
     const weekdayTemplate = [
-      { time: "08:00 - 10:00", status: "空闲" },
-      { time: "10:00 - 12:00", status: "空闲" },
-      { time: "14:00 - 16:00", status: "空闲" },
-      { time: "16:00 - 18:00", status: "待定" },
-      { time: "19:30 - 21:30", status: "待定" }
+      { time: "08:00 - 10:00", status: "空闲" },     
+      { time: "10:00 - 12:00", status: "空闲" },     
+      { time: "14:00 - 16:00", status: "空闲" }, 
+      { time: "16:00 - 18:00", status: "待定" },   
+      { time: "19:00 - 21:00", status: "待定" },   
+      { time: "21:00 - 23:00", status: "空闲" }      
     ];
 
-    // 周六 (14:00 - 16:00 已恢复为空闲)
+    // B. 周六专属模板
     const saturdayTemplate = [
       { time: "08:00 - 10:00", status: "空闲" },
       { time: "10:00 - 12:00", status: "空闲" },
-      { time: "14:00 - 16:00", status: "空闲" },   // 恢复为绿色
-      { time: "16:00 - 18:00", status: "空闲" },   
-      { time: "19:30 - 21:30", status: "空闲" }    
+      { time: "14:00 - 16:00", status: "空闲" },
+      { time: "16:00 - 18:00", status: "空闲" },
+      { time: "19:00 - 21:00", status: "空闲" },
+      { time: "21:00 - 23:00", status: "空闲" }
     ];
 
+    // C. 周日专属模板
     const sundayTemplate = [
       { time: "08:00 - 10:00", status: "空闲" },
       { time: "10:00 - 12:00", status: "空闲" },
       { time: "13:00 - 15:00", status: "已排课" },
       { time: "15:00 - 17:00", status: "已排课" },
       { time: "17:00 - 19:00", status: "已排课" },
-      { time: "19:30 - 21:30", status: "空闲" }    
+      { time: "19:30 - 21:30", status: "空闲" },
+      { time: "21:30 - 23:30", status: "空闲" }
     ];
 
     // --- 2. 节假日全天覆盖配置 ---
@@ -146,17 +286,7 @@
     ];
 
     // --- 3. 特定日期局部覆盖配置 (Override 功能) ---
-    const specificOverrides = {
-      // 示例 1：临时接到通知，3月11日(周三)下午被订走了，晚上也不排课了。
-    //   "3-11": {
-    //     "14:00 - 16:00": "已排课",
-    //     "19:30 - 21:30": "已排课"
-    //   },
-      // 示例 2：3月21日(周六)早上临时有事，不能排课。
-    //   "3-21": {
-    //     "08:00 - 10:00": "待定"
-    //   }
-    };
+    const specificOverrides = {};
 
     // --- 生成数据逻辑 ---
     const scheduleData = [];
@@ -176,7 +306,6 @@
         let dateStr = `${month}-${date}`;
         
         let slots;
-        // 步骤 A：应用每日基础模板
         if (dayOfWeek === 0) {
           slots = JSON.parse(JSON.stringify(sundayTemplate));
         } else if (dayOfWeek === 6) {
@@ -185,13 +314,11 @@
           slots = JSON.parse(JSON.stringify(weekdayTemplate));
         }
         
-        // 步骤 B：如果是节假日，全天强制改为“待定”
         let isHoliday = holidays2026.includes(dateStr);
         if (isHoliday) {
           slots.forEach(slot => slot.status = "待定");
         }
 
-        // 步骤 C：如果是特定的覆盖日期 (Override)，精准修改对应时间段
         if (specificOverrides[dateStr]) {
           const dayOverrides = specificOverrides[dateStr];
           slots.forEach(slot => {
@@ -225,7 +352,7 @@
     const container = document.getElementById('schedule-container');
     
     container.innerHTML = scheduleData.map(week => `
-      <div class="bg-body rounded-4 shadow-sm border p-3 p-md-4">
+      <div class="week-card bg-body rounded-4 shadow-sm border p-3 p-md-4">
         <h3 class="h5 fw-bold text-primary mb-3 pb-2 border-bottom">
           🗓️ ${week.weekTitle}
         </h3>
@@ -255,11 +382,26 @@
                       statusClass = "bg-danger-subtle border-danger text-danger";
                     }
 
-                    return `
-                      <div class="time-slot p-2 rounded text-center fw-bold border small ${statusClass}">
-                        ${slot.time}
-                      </div>
-                    `;
+                    if (slot.backText) {
+                      return `
+                        <div class="flip-container hover-scale">
+                          <div class="flip-inner">
+                            <div class="p-2 rounded text-center fw-bold border small ${statusClass} flip-front">
+                              ${slot.time}
+                            </div>
+                            <div class="p-2 rounded text-center fw-bold border small ${statusClass} flip-back">
+                              ${slot.backText}
+                            </div>
+                          </div>
+                        </div>
+                      `;
+                    } else {
+                      return `
+                        <div class="p-2 rounded text-center fw-bold border small hover-scale ${statusClass}">
+                          ${slot.time}
+                        </div>
+                      `;
+                    }
                   }).join('')}
                 </div>
               </div>
@@ -271,4 +413,3 @@
   </script>
 </body>
 </html>
-
