@@ -111,15 +111,32 @@
   
   <div class="container-fluid max-w-7xl px-4">
     <h1 class="text-center text-body fw-bold mb-3 mt-2">2025-2026年度第二学期可排课时间</h1>
-    <p class="text-danger fw-bold text-center mb-5 pb-4 fs-5">
+    <p class="text-danger fw-bold text-center mb-5 pb-2 fs-5">
       如果您有任何课程安排，请立即与我联系。
     </p>
+  </div>
+
+  <div class="container-fluid max-w-7xl px-4 d-lg-none mb-4">
+    <div class="text-center">
+      <fieldset class="intro-fieldset text-center shadow-sm">
+        <legend class="intro-legend">ℹ️ 说明</legend>
+        <div class="d-inline-block text-start">
+          <ol class="mb-0 ps-3 text-body-secondary small lh-lg">
+            <li>我专注于高考与高中教学辅导，其次也带少量中考与初二学生。</li>
+            <li>我的教学带有明显的个人风格，自创概念术语，自创模型，应试性强，故存在“对高一学生讲授的学习方法跟对高三学生讲授的学习方法完全不同甚至截然相反”的情形，此乃正常。</li>
+            <li>与其他老师一样，有学生喜欢我，就一定有学生不喜欢我，此亦正常。只是，我带不了“主观上自己不愿意学好英语”的学生。</li>
+            <li>截至2026年3月1日，我与八家机构有达成初步合作意向，如读者有排课需求，敬请尽早联系我，过之不候。</li>
+            <li>既然能访问这个排课表，说明你知道我是谁、如何联系我。</li>
+          </ol>
+        </div>
+      </fieldset>
+    </div>
   </div>
 
   <div class="sticky-top sticky-header-wrapper z-3 shadow-sm border-bottom pb-3 mb-4 pt-2">
     <div class="container-fluid max-w-7xl px-4">
       
-      <div class="text-center mb-4">
+      <div class="text-center mb-4 d-none d-lg-block">
         <fieldset class="intro-fieldset text-center shadow-sm">
           <legend class="intro-legend">ℹ️ 说明</legend>
           <div class="d-inline-block text-start">
@@ -127,8 +144,8 @@
               <li>我专注于高考与高中教学辅导，其次也带少量中考与初二学生。</li>
               <li>我的教学带有明显的个人风格，自创概念术语，自创模型，应试性强，故存在“对高一学生讲授的学习方法跟对高三学生讲授的学习方法完全不同甚至截然相反”的情形，此乃正常。</li>
               <li>与其他老师一样，有学生喜欢我，就一定有学生不喜欢我，此亦正常。只是，我带不了“主观上自己不愿意学好英语”的学生。</li>
-              <li>截至2026年3月1日，我与八家机构有达成初步合作意向，如您有排课需求，请尽早联系我，过之不候。</li>
-              <li>本排课表的时间可以协商微调。既然能访问这个排课表，您知道我是谁、如何联系我。</li>
+              <li>截至2026年3月1日，我与八家机构有达成初步合作意向，如读者有排课需求，敬请尽早联系我，过之不候。</li>
+              <li>既然能访问这个排课表，说明你知道我是谁、如何联系我。</li>
             </ol>
           </div>
         </fieldset>
@@ -247,7 +264,6 @@
 
     // --- 1. 独立时间模板 ---
 
-    // A. 周一至周五 (已移除12-14点，16-18点和19-21点改为待定)
     const weekdayTemplate = [
       { time: "08:00 - 10:00", status: "空闲" },     
       { time: "10:00 - 12:00", status: "空闲" },     
@@ -257,7 +273,6 @@
       { time: "21:00 - 23:00", status: "空闲" }      
     ];
 
-    // B. 周六专属模板
     const saturdayTemplate = [
       { time: "08:00 - 10:00", status: "空闲" },
       { time: "10:00 - 12:00", status: "空闲" },
@@ -267,7 +282,6 @@
       { time: "21:00 - 23:00", status: "空闲" }
     ];
 
-    // C. 周日专属模板
     const sundayTemplate = [
       { time: "08:00 - 10:00", status: "空闲" },
       { time: "10:00 - 12:00", status: "空闲" },
