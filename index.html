@@ -81,7 +81,7 @@
       top: 0; left: 0; right: 0; bottom: 0;
       background-color: rgba(var(--bs-body-bg-rgb), 0.7); 
       backdrop-filter: blur(1.5px) grayscale(0.8);
-      z-index: 10;
+      z-index: 2;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -119,7 +119,7 @@
         <div class="d-inline-block text-start">
           <ol class="mb-0 ps-3 text-body-secondary small lh-lg">
             <li>我专注于高考与高中教学辅导，其次也带少量中考与初二学生。</li>
-            <li>我的教学带有明显的个人风格，自创概念术语，自创模型框架，应试性强，故存在“对高一学生讲授的学习方法跟对高三学生讲授的学习方法完全不同甚至相反”的情形，此乃正常。</li>
+            <li>我的教学带有明显的个人风格，自创概念术语，自创模型，应试性强，故存在“对高一学生讲授的学习方法跟对高三学生讲授的学习方法完全不同甚至截然相反”的情形，此乃正常。</li>
             <li>与其他老师一样，有学生喜欢我，就一定有学生不喜欢我，此亦正常。只是，我带不了“主观上自己不愿意学好英语”的学生。</li>
             <li>截至2026年3月1日，我与八家机构有达成初步合作意向，如读者有排课需求，敬请尽早联系我，过之不候。</li>
             <li>课程时间可以协商微调。既然能访问这个排课表，说明你知道我是谁、如何联系我。</li>
@@ -129,7 +129,7 @@
     </div>
   </div>
 
-  <div class="sticky-top sticky-header-wrapper z-3 shadow-sm border-bottom pb-3 mb-4 pt-2">
+  <div class="sticky-top sticky-header-wrapper shadow-sm border-bottom pb-3 mb-4 pt-2">
     <div class="container-fluid max-w-7xl px-4">
       
       <div class="text-center mb-4 d-none d-lg-block">
@@ -138,7 +138,7 @@
           <div class="d-inline-block text-start">
             <ol class="mb-0 ps-3 text-body-secondary small lh-lg">
               <li>我专注于高考与高中教学辅导，其次也带少量中考与初二学生。</li>
-              <li>我的教学带有明显的个人风格，自创概念术语，自创模型框架，应试性强，故存在“对高一学生讲授的学习方法跟对高三学生讲授的学习方法完全不同甚至相反”的情形，此乃正常。</li>
+              <li>我的教学带有明显的个人风格，自创概念术语，自创模型，应试性强，故存在“对高一学生讲授的学习方法跟对高三学生讲授的学习方法完全不同甚至截然相反”的情形，此乃正常。</li>
               <li>与其他老师一样，有学生喜欢我，就一定有学生不喜欢我，此亦正常。只是，我带不了“主观上自己不愿意学好英语”的学生。</li>
               <li>截至2026年3月1日，我与八家机构有达成初步合作意向，如读者有排课需求，敬请尽早联系我，过之不候。</li>
               <li>课程时间可以协商微调。既然能访问这个排课表，说明你知道我是谁、如何联系我。</li>
@@ -150,7 +150,7 @@
       <div class="row align-items-center mb-3">
         <div class="col-8 col-md-6 text-start">
           <h2 class="h6 mb-0 text-body">
-            此排课表更新于 <span class="fw-bold text-primary">3月12日 07:33</span>
+            此排课表更新于 <span class="fw-bold text-primary">3月12日 07:45</span>
           </h2>
         </div>
         
@@ -247,8 +247,8 @@
       { time: "08:00 - 10:00", status: "空闲" },     
       { time: "10:00 - 12:00", status: "空闲" },     
       { time: "14:00 - 16:00", status: "空闲" }, 
-      { time: "16:00 - 18:00", status: "已排课" }, // 修改为红色   
-      { time: "19:00 - 21:00", status: "已排课" }, // 修改为红色
+      { time: "16:00 - 18:00", status: "已排课" },   
+      { time: "19:00 - 21:00", status: "已排课" }, 
       { time: "21:00 - 23:00", status: "空闲" }      
     ];
 
@@ -271,51 +271,66 @@
       { time: "21:30 - 23:30", status: "空闲" }
     ];
 
-    // --- 2. 节假日及覆盖配置 ---
+    // --- 2. 节假日 ---
     const holidays2026 = [
       "4-4", "4-5", "4-6", "5-1", "5-2", "5-3", "5-4", "5-5", "6-19", "6-20", "6-21"
     ];
-    
-    // 特定日期覆盖
-    const specificOverrides = {
-      "3-5": {
-        "08:00 - 10:00": "已排课",
-        "10:00 - 12:00": "已排课",
-        "14:00 - 16:00": "已排课"
+
+    // ==========================================
+    // 💡 3. 全新的：批量与区间覆盖配置 (Batch Overrides)
+    // ==========================================
+    const batchOverrides = [
+      {
+        // 组 1：利用波浪号 ~ 表示区间。这里囊括了 3-5 到 3-8，以及 3-11 到 3-13
+        dates: ["3-5~3-8", "3-11~3-13"],
+        changes: {
+          "08:00 - 10:00": "已排课",
+          "10:00 - 12:00": "已排课",
+          "14:00 - 16:00": "已排课"
+        }
       },
-      "3-6": {
-        "08:00 - 10:00": "已排课",
-        "10:00 - 12:00": "已排课",
-        "14:00 - 16:00": "已排课"
-      },
-      "3-7": {
-        "08:00 - 10:00": "已排课",
-        "10:00 - 12:00": "已排课",
-        "14:00 - 16:00": "已排课",
-        "16:00 - 18:00": "已排课",
-        "19:00 - 21:00": "已排课"
-      },
-      "3-8": {
-        "08:00 - 10:00": "已排课",
-        "10:00 - 12:00": "已排课",
-        "14:00 - 16:00": "已排课"
-      },
-      "3-11": {
-        "08:00 - 10:00": "已排课",
-        "10:00 - 12:00": "已排课",
-        "14:00 - 16:00": "已排课"
-      },
-      "3-12": {
-        "08:00 - 10:00": "已排课",
-        "10:00 - 12:00": "已排课",
-        "14:00 - 16:00": "已排课"
-      },
-      "3-13": {
-        "08:00 - 10:00": "已排课",
-        "10:00 - 12:00": "已排课",
-        "14:00 - 16:00": "已排课"
+      {
+        // 组 2：叠加属性。3-7 号由于在上面已经被设了早上的课，
+        // 这里再补充 16:00 之后的课，系统会自动把它们无缝“合并”起来！
+        dates: ["3-7"],
+        changes: {
+          "16:00 - 18:00": "已排课",
+          "19:00 - 21:00": "已排课"
+        }
       }
-    };
+    ];
+
+    // --- 区间解析引擎 (将 "3-5~3-8" 自动拆解并拼装) ---
+    function expandDateRange(dateStr) {
+      if (!dateStr.includes("~")) return [dateStr];
+      const parts = dateStr.split("~").map(s => s.trim());
+      const startParts = parts[0].split("-");
+      const endParts = parts[1].split("-");
+      // 使用 2026 年基准，确保跨月（如 3-30~4-2）也能被精确解析
+      let start = new Date(2026, parseInt(startParts[0]) - 1, parseInt(startParts[1]));
+      let end = new Date(2026, parseInt(endParts[0]) - 1, parseInt(endParts[1]));
+      
+      const expanded = [];
+      let current = new Date(start);
+      while (current <= end) {
+        expanded.push(`${current.getMonth() + 1}-${current.getDate()}`);
+        current.setDate(current.getDate() + 1);
+      }
+      return expanded;
+    }
+
+    // 将批量规则引擎自动转换为系统可读的底层结构
+    const specificOverrides = {};
+    batchOverrides.forEach(rule => {
+      rule.dates.forEach(dateItem => {
+        const expandedDates = expandDateRange(dateItem);
+        expandedDates.forEach(date => {
+          if (!specificOverrides[date]) specificOverrides[date] = {};
+          // Object.assign 会把后执行的规则智能“叠加”在前面的规则上
+          Object.assign(specificOverrides[date], rule.changes);
+        });
+      });
+    });
 
     // --- 生成数据逻辑 ---
     const scheduleData = [];
@@ -323,7 +338,6 @@
     let endDate = new Date(2026, 5, 28);      
     const dayNames = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
 
-    // 核心逻辑：获取今天的日期（将时分秒清零，方便纯日期对比）
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -359,7 +373,6 @@
           });
         }
         
-        // 核心对比：当前正在生成的日期卡片是否小于“今天”
         let columnDate = new Date(currentDate);
         columnDate.setHours(0, 0, 0, 0);
         let isPast = columnDate < today;
@@ -368,7 +381,7 @@
           dateLabel: `${month}月${date}日`,
           dayName: dayNames[dayOfWeek],
           isHoliday: holidays2026.includes(dateStr),
-          isPast: isPast, // 将是否过期存入数据供渲染时判断
+          isPast: isPast, 
           slots: slots
         });
         
@@ -443,10 +456,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
