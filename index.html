@@ -81,7 +81,7 @@
       top: 0; left: 0; right: 0; bottom: 0;
       background-color: rgba(var(--bs-body-bg-rgb), 0.7); 
       backdrop-filter: blur(1.5px) grayscale(0.8);
-      z-index: 2;
+      z-index: 2; /* 防止穿透吸顶表头 */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -150,7 +150,7 @@
       <div class="row align-items-center mb-3">
         <div class="col-8 col-md-6 text-start">
           <h2 class="h6 mb-0 text-body">
-            此排课表更新于 <span class="fw-bold text-primary">3月12日 07:45</span>
+            此排课表更新于 <span class="fw-bold text-primary">3月12日 18:00</span>
           </h2>
         </div>
         
@@ -252,11 +252,13 @@
       { time: "21:00 - 23:00", status: "空闲" }      
     ];
 
+    // 修改：周六下午的时间段已更新
     const saturdayTemplate = [
       { time: "08:00 - 10:00", status: "空闲" },
       { time: "10:00 - 12:00", status: "空闲" },
-      { time: "14:00 - 16:00", status: "空闲" },
-      { time: "16:00 - 18:00", status: "空闲" },
+      { time: "13:00 - 15:00", status: "空闲" },
+      { time: "15:00 - 17:00", status: "空闲" },
+      { time: "17:00 - 19:00", status: "空闲" },
       { time: "19:00 - 21:00", status: "空闲" },
       { time: "21:00 - 23:00", status: "空闲" }
     ];
@@ -281,7 +283,6 @@
     // ==========================================
     const batchOverrides = [
       {
-        // 组 1：利用波浪号 ~ 表示区间。这里囊括了 3-5 到 3-8，以及 3-11 到 3-13
         dates: ["3-5~3-8", "3-11~3-13"],
         changes: {
           "08:00 - 10:00": "已排课",
@@ -290,12 +291,23 @@
         }
       },
       {
-        // 组 2：叠加属性。3-7 号由于在上面已经被设了早上的课，
-        // 这里再补充 16:00 之后的课，系统会自动把它们无缝“合并”起来！
         dates: ["3-7"],
         changes: {
           "16:00 - 18:00": "已排课",
           "19:00 - 21:00": "已排课"
+        }
+      },
+      {
+        // 新增：3月14日全天已排课（当天是周六，对应saturdayTemplate的时间段）
+        dates: ["3-14"],
+        changes: {
+          "08:00 - 10:00": "已排课",
+          "10:00 - 12:00": "已排课",
+          "13:00 - 15:00": "已排课",
+          "15:00 - 17:00": "已排课",
+          "17:00 - 19:00": "已排课",
+          "19:00 - 21:00": "已排课",
+          "21:00 - 23:00": "已排课"
         }
       }
     ];
@@ -306,7 +318,7 @@
       const parts = dateStr.split("~").map(s => s.trim());
       const startParts = parts[0].split("-");
       const endParts = parts[1].split("-");
-      // 使用 2026 年基准，确保跨月（如 3-30~4-2）也能被精确解析
+      // 使用 2026 年基准，确保跨月也能被精确解析
       let start = new Date(2026, parseInt(startParts[0]) - 1, parseInt(startParts[1]));
       let end = new Date(2026, parseInt(endParts[0]) - 1, parseInt(endParts[1]));
       
