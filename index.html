@@ -75,13 +75,13 @@
       pointer-events: auto;
     }
 
-    /* 已过期日期的蒙版特效 CSS */
+    /* 蒙版特效与 3D 翻转 CSS */
     .past-mask {
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
       background-color: rgba(var(--bs-body-bg-rgb), 0.7); 
       backdrop-filter: blur(1.5px) grayscale(0.8);
-      z-index: 2; /* 防止穿透吸顶表头 */
+      z-index: 2;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -100,6 +100,34 @@
       font-size: 1.5rem;
       color: var(--bs-success);
       margin-bottom: 0.5rem;
+    }
+
+    /* 3D 翻转核心 */
+    .flip-container {
+      perspective: 1000px;
+    }
+    .flip-inner {
+      position: relative;
+      width: 100%;
+      transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); 
+      transform-style: preserve-3d;
+    }
+    .flip-container:hover .flip-inner {
+      transform: rotateY(180deg);
+    }
+    .flip-front, .flip-back {
+      width: 100%;
+      backface-visibility: hidden;
+    }
+    .flip-back {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      transform: rotateY(180deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   </style>
 </head>
@@ -150,7 +178,7 @@
       <div class="row align-items-center mb-3">
         <div class="col-8 col-md-6 text-start">
           <h2 class="h6 mb-0 text-body">
-            此排课表更新于 <span class="fw-bold text-primary">3月12日 18:00</span>
+            此排课表更新于 <span class="fw-bold text-primary">3月13日 18:46</span>
           </h2>
         </div>
         
@@ -243,16 +271,16 @@
     setInterval(updateClock, 1000);
 
     // --- 1. 独立时间模板 ---
+    // 修改 1：工作日加入了翻转背面 "XS.EDU"
     const weekdayTemplate = [
       { time: "08:00 - 10:00", status: "空闲" },     
       { time: "10:00 - 12:00", status: "空闲" },     
       { time: "14:00 - 16:00", status: "空闲" }, 
-      { time: "16:00 - 18:00", status: "已排课" },   
-      { time: "19:00 - 21:00", status: "已排课" }, 
+      { time: "16:00 - 18:00", status: "已排课", backText: "XS.EDU" },   
+      { time: "19:00 - 21:00", status: "已排课", backText: "XS.EDU" }, 
       { time: "21:00 - 23:00", status: "空闲" }      
     ];
 
-    // 修改：周六下午的时间段已更新
     const saturdayTemplate = [
       { time: "08:00 - 10:00", status: "空闲" },
       { time: "10:00 - 12:00", status: "空闲" },
@@ -263,12 +291,13 @@
       { time: "21:00 - 23:00", status: "空闲" }
     ];
 
+    // 修改 2：移除周日下午的红色，全部变为空闲
     const sundayTemplate = [
       { time: "08:00 - 10:00", status: "空闲" },
       { time: "10:00 - 12:00", status: "空闲" },
-      { time: "13:00 - 15:00", status: "已排课" },
-      { time: "15:00 - 17:00", status: "已排课" },
-      { time: "17:00 - 19:00", status: "已排课" },
+      { time: "13:00 - 15:00", status: "空闲" },
+      { time: "15:00 - 17:00", status: "空闲" },
+      { time: "17:00 - 19:00", status: "空闲" },
       { time: "19:30 - 21:30", status: "空闲" },
       { time: "21:30 - 23:30", status: "空闲" }
     ];
@@ -279,7 +308,7 @@
     ];
 
     // ==========================================
-    // 💡 3. 全新的：批量与区间覆盖配置 (Batch Overrides)
+    // 💡 3. 升级版：批量与区间覆盖配置 (支持翻转对象注入)
     // ==========================================
     const batchOverrides = [
       {
@@ -298,27 +327,36 @@
         }
       },
       {
-        // 新增：3月14日全天已排课（当天是周六，对应saturdayTemplate的时间段）
+        // 修改 3 & 4：3月14日全天排课，并指定特定翻转文字
         dates: ["3-14"],
         changes: {
-          "08:00 - 10:00": "已排课",
-          "10:00 - 12:00": "已排课",
-          "13:00 - 15:00": "已排课",
-          "15:00 - 17:00": "已排课",
+          "08:00 - 10:00": { status: "已排课", backText: "JY.EDU" },
+          "10:00 - 12:00": { status: "已排课", backText: "JY.EDU" },
+          "13:00 - 15:00": { status: "已排课", backText: "PD.EDU" },
+          "15:00 - 17:00": { status: "已排课", backText: "PD.EDU" },
           "17:00 - 19:00": "已排课",
           "19:00 - 21:00": "已排课",
           "21:00 - 23:00": "已排课"
         }
+      },
+      {
+        // 修改 5 & 6：3月15日上午10-12和所有下午时段均标红并翻转
+        dates: ["3-15"],
+        changes: {
+          "10:00 - 12:00": { status: "已排课", backText: "PD.EDU" },
+          "13:00 - 15:00": { status: "已排课", backText: "HW.EDU" },
+          "15:00 - 17:00": { status: "已排课", backText: "HW.EDU" },
+          "17:00 - 19:00": { status: "已排课", backText: "HW.EDU" }
+        }
       }
     ];
 
-    // --- 区间解析引擎 (将 "3-5~3-8" 自动拆解并拼装) ---
+    // --- 区间解析引擎 ---
     function expandDateRange(dateStr) {
       if (!dateStr.includes("~")) return [dateStr];
       const parts = dateStr.split("~").map(s => s.trim());
       const startParts = parts[0].split("-");
       const endParts = parts[1].split("-");
-      // 使用 2026 年基准，确保跨月也能被精确解析
       let start = new Date(2026, parseInt(startParts[0]) - 1, parseInt(startParts[1]));
       let end = new Date(2026, parseInt(endParts[0]) - 1, parseInt(endParts[1]));
       
@@ -338,7 +376,6 @@
         const expandedDates = expandDateRange(dateItem);
         expandedDates.forEach(date => {
           if (!specificOverrides[date]) specificOverrides[date] = {};
-          // Object.assign 会把后执行的规则智能“叠加”在前面的规则上
           Object.assign(specificOverrides[date], rule.changes);
         });
       });
@@ -372,15 +409,26 @@
           slots = JSON.parse(JSON.stringify(weekdayTemplate));
         }
         
+        // 核心拦截：如果是节假日，全部置为待定，并擦除翻转文字
         if (holidays2026.includes(dateStr)) {
-          slots.forEach(slot => slot.status = "待定");
+          slots.forEach(slot => {
+            slot.status = "待定";
+            delete slot.backText; // 节假日擦除隐藏文字
+          });
         }
 
+        // 高级合并：不仅支持字符串，也支持带有 backText 的对象
         if (specificOverrides[dateStr]) {
           const dayOverrides = specificOverrides[dateStr];
           slots.forEach(slot => {
             if (dayOverrides[slot.time]) {
-              slot.status = dayOverrides[slot.time];
+              const overrideData = dayOverrides[slot.time];
+              if (typeof overrideData === 'string') {
+                slot.status = overrideData;
+              } else {
+                if (overrideData.status) slot.status = overrideData.status;
+                if (overrideData.backText) slot.backText = overrideData.backText;
+              }
             }
           });
         }
@@ -452,11 +500,27 @@
                       statusClass = "bg-danger-subtle border-danger text-danger";
                     }
 
-                    return `
-                      <div class="p-2 rounded text-center fw-bold border small hover-scale ${statusClass}">
-                        ${slot.time}
-                      </div>
-                    `;
+                    // 智能渲染：存在 backText 即启用 3D 翻转
+                    if (slot.backText) {
+                      return `
+                        <div class="flip-container hover-scale">
+                          <div class="flip-inner">
+                            <div class="p-2 rounded text-center fw-bold border small ${statusClass} flip-front">
+                              ${slot.time}
+                            </div>
+                            <div class="p-2 rounded text-center fw-bold border small ${statusClass} flip-back">
+                              ${slot.backText}
+                            </div>
+                          </div>
+                        </div>
+                      `;
+                    } else {
+                      return `
+                        <div class="p-2 rounded text-center fw-bold border small hover-scale ${statusClass}">
+                          ${slot.time}
+                        </div>
+                      `;
+                    }
                   }).join('')}
                 </div>
               </div>
