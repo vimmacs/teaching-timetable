@@ -169,6 +169,8 @@
               <li>我的教学带有明显的个人风格，自创概念术语，自创模型，应试性强，故存在“对高一学生讲授的学习方法跟对高三学生讲授的学习方法完全不同甚至截然相反”的情形，此乃正常。</li>
               <li>与其他老师一样，有学生喜欢我，就一定有学生不喜欢我，此亦正常。只是，我带不了“主观上自己不愿意学好英语”的学生。</li>
               <li>截至2026年3月1日，我与八家机构有达成初步合作意向，如读者有排课需求，敬请尽早联系我，过之不候。</li>
+              <li>以下有每天每个时段的排课色块示意图。补充说明的是，黄色色块表示已有时间不固定的排课、可能有空档，所以这个色块的时间表示有可能没有排课、可抢约。</li>
+              <li>当鼠标移动到红色色块时，可以看到该色块翻转到对应的机构名（我已用名称缩写来保护各机构隐私）。</li>
               <li>课程时间可以协商微调。既然能访问这个排课表，说明你知道我是谁、如何联系我。</li>
             </ol>
           </div>
@@ -178,7 +180,7 @@
       <div class="row align-items-center mb-3">
         <div class="col-8 col-md-6 text-start">
           <h2 class="h6 mb-0 text-body">
-            此排课表更新于 <span class="fw-bold text-primary">3月14日 6:46</span>
+            此排课表更新于 <span class="fw-bold text-primary">3月13日 20:00</span>
           </h2>
         </div>
         
@@ -195,12 +197,12 @@
           <span>空闲 / 可排课</span>
         </div>
         <div class="d-flex align-items-center gap-2">
-          <div class="border border-warning bg-warning-subtle rounded" style="width: 20px; height: 20px;"></div>
-          <span>待定 / 可抢约</span>
-        </div>
-        <div class="d-flex align-items-center gap-2">
           <div class="border border-danger bg-danger-subtle rounded" style="width: 20px; height: 20px;"></div>
           <span>已满 / 已排课</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <div class="border border-warning bg-warning-subtle rounded" style="width: 20px; height: 20px;"></div>
+          <span>不固定排课 / 欢迎询空档</span>
         </div>
       </div>
 
@@ -271,11 +273,12 @@
     setInterval(updateClock, 1000);
 
     // --- 1. 独立时间模板 ---
-    // 修改 1：工作日加入了翻转背面 "XS.EDU"
+    
+    // 💡 修改：工作日的早、中时段改为 "待定" (黄色)
     const weekdayTemplate = [
-      { time: "08:00 - 10:00", status: "空闲" },     
-      { time: "10:00 - 12:00", status: "空闲" },     
-      { time: "14:00 - 16:00", status: "空闲" }, 
+      { time: "08:00 - 10:00", status: "待定" },     
+      { time: "10:00 - 12:00", status: "待定" },     
+      { time: "14:00 - 16:00", status: "待定" }, 
       { time: "16:00 - 18:00", status: "已排课", backText: "XS.EDU" },   
       { time: "19:00 - 21:00", status: "已排课", backText: "XS.EDU" }, 
       { time: "21:00 - 23:00", status: "空闲" }      
@@ -291,7 +294,6 @@
       { time: "21:00 - 23:00", status: "空闲" }
     ];
 
-    // 修改 2：移除周日下午的红色，全部变为空闲
     const sundayTemplate = [
       { time: "08:00 - 10:00", status: "空闲" },
       { time: "10:00 - 12:00", status: "空闲" },
@@ -307,9 +309,7 @@
       "4-4", "4-5", "4-6", "5-1", "5-2", "5-3", "5-4", "5-5", "6-19", "6-20", "6-21"
     ];
 
-    // ==========================================
-    // 💡 3. 升级版：批量与区间覆盖配置 (支持翻转对象注入)
-    // ==========================================
+    // --- 3. 批量与区间覆盖配置 (Batch Overrides) ---
     const batchOverrides = [
       {
         dates: ["3-5~3-8", "3-11~3-13"],
@@ -327,7 +327,6 @@
         }
       },
       {
-        // 修改 3 & 4：3月14日全天排课，并指定特定翻转文字
         dates: ["3-14"],
         changes: {
           "08:00 - 10:00": { status: "已排课", backText: "JY.EDU" },
@@ -340,7 +339,6 @@
         }
       },
       {
-        // 修改 5 & 6：3月15日上午10-12和所有下午时段均标红并翻转
         dates: ["3-15"],
         changes: {
           "10:00 - 12:00": { status: "已排课", backText: "PD.EDU" },
@@ -369,7 +367,6 @@
       return expanded;
     }
 
-    // 将批量规则引擎自动转换为系统可读的底层结构
     const specificOverrides = {};
     batchOverrides.forEach(rule => {
       rule.dates.forEach(dateItem => {
@@ -409,15 +406,13 @@
           slots = JSON.parse(JSON.stringify(weekdayTemplate));
         }
         
-        // 核心拦截：如果是节假日，全部置为待定，并擦除翻转文字
         if (holidays2026.includes(dateStr)) {
           slots.forEach(slot => {
             slot.status = "待定";
-            delete slot.backText; // 节假日擦除隐藏文字
+            delete slot.backText; 
           });
         }
 
-        // 高级合并：不仅支持字符串，也支持带有 backText 的对象
         if (specificOverrides[dateStr]) {
           const dayOverrides = specificOverrides[dateStr];
           slots.forEach(slot => {
@@ -500,7 +495,6 @@
                       statusClass = "bg-danger-subtle border-danger text-danger";
                     }
 
-                    // 智能渲染：存在 backText 即启用 3D 翻转
                     if (slot.backText) {
                       return `
                         <div class="flip-container hover-scale">
