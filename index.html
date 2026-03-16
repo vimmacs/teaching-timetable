@@ -182,7 +182,7 @@
       <div class="row align-items-center mb-3">
         <div class="col-8 col-md-6 text-start">
           <h2 class="h6 mb-0 text-body">
-            此排课表更新于 <span class="fw-bold text-primary">3月16日 09:45</span>
+            此排课表更新于 <span class="fw-bold text-primary">3月16日 10:15</span>
           </h2>
         </div>
         
@@ -315,9 +315,10 @@
     ];
 
     // --- 3. 批量与区间覆盖配置 (Batch Overrides) ---
+    // 💡 修改：将目前的特定排班复制并映射到了 7月的对应日期（7-1~7-5）
     const batchOverrides = [
       {
-        dates: ["3-5~3-8", "3-11~3-13"],
+        dates: ["3-5~3-8", "3-11~3-13", "7-1~7-3"],
         changes: {
           "08:00 - 10:00": "已排课",
           "10:00 - 12:00": "已排课",
@@ -332,7 +333,7 @@
         }
       },
       {
-        dates: ["3-14"],
+        dates: ["3-14", "7-4"],
         changes: {
           "08:00 - 10:00": { status: "已排课", backText: "JY.EDU" },
           "10:00 - 12:00": { status: "已排课", backText: "JY.EDU" },
@@ -344,7 +345,7 @@
         }
       },
       {
-        dates: ["3-15"],
+        dates: ["3-15", "7-5"],
         changes: {
           "10:00 - 12:00": { status: "已排课", backText: "PD.EDU" },
           "13:00 - 15:00": { status: "已排课", backText: "HW.EDU" },
@@ -354,7 +355,6 @@
       }
     ];
 
-    // --- 区间解析引擎 ---
     function expandDateRange(dateStr) {
       if (!dateStr.includes("~")) return [dateStr];
       const parts = dateStr.split("~").map(s => s.trim());
@@ -386,7 +386,8 @@
     // --- 生成数据逻辑 ---
     const scheduleData = [];
     let currentDate = new Date(2026, 2, 2);   
-    let endDate = new Date(2026, 5, 28);      
+    // 💡 修改：将排课计算截止时间延后到了 8月30日
+    let endDate = new Date(2026, 7, 30);      
     const dayNames = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
 
     const today = new Date();
@@ -411,13 +412,37 @@
           slots = JSON.parse(JSON.stringify(weekdayTemplate));
         }
         
-        if (holidays2026.includes(dateStr)) {
+        // 💡 核心逻辑：时间段拦截器 (计算当天的特殊属性)
+        let columnDate = new Date(currentDate);
+        columnDate.setHours(0, 0, 0, 0);
+
+        let isHoliday = holidays2026.includes(dateStr);
+        let isPast = columnDate < today;
+        let isSummerVacation = (columnDate >= new Date(2026, 6, 13) && columnDate <= new Date(2026, 7, 30)); // 7.13 - 8.30
+        let isAllGreenWeek = (columnDate >= new Date(2026, 6, 6) && columnDate <= new Date(2026, 6, 12));    // 7.6 - 7.12
+        
+        // 确定卡片头部的 Badge 徽章类型
+        let badgeType = "";
+        if (isSummerVacation) badgeType = "暑假";
+        else if (isHoliday) badgeType = "节假日";
+
+        // 规则执行 1：节假日与暑假全部变成“待定(黄)”并擦除翻转文字
+        if (badgeType !== "") {
           slots.forEach(slot => {
             slot.status = "待定";
             delete slot.backText; 
           });
         }
 
+        // 规则执行 2：全绿的神仙周
+        if (isAllGreenWeek) {
+          slots.forEach(slot => {
+            slot.status = "空闲";
+            delete slot.backText; 
+          });
+        }
+
+        // 规则执行 3：处理特定天的精准覆盖
         if (specificOverrides[dateStr]) {
           const dayOverrides = specificOverrides[dateStr];
           slots.forEach(slot => {
@@ -432,15 +457,11 @@
             }
           });
         }
-        
-        let columnDate = new Date(currentDate);
-        columnDate.setHours(0, 0, 0, 0);
-        let isPast = columnDate < today;
 
         weekDays.push({
           dateLabel: `${month}月${date}日`,
           dayName: dayNames[dayOfWeek],
-          isHoliday: holidays2026.includes(dateStr),
+          badgeType: badgeType, // 传入特定的 Badge 给渲染器
           isPast: isPast, 
           slots: slots
         });
@@ -473,7 +494,6 @@
 
     // --- 核心渲染函数 ---
     const renderWeekHtml = (week) => {
-      // 在 JS 的模板字符串中拼接 HTML，不再使用任何多余的反斜杠转义
       let html = `
         <div class="week-card bg-body rounded-4 shadow-sm border p-3 p-md-4">
           <h3 class="h5 fw-bold text-primary mb-3 pb-2 border-bottom">
@@ -483,9 +503,13 @@
       `;
       
       week.days.forEach(dayData => {
+        // 如果 dayData 传来了 badgeType，这天必定是节假日或暑假，所以边框和底色全部变黄
+        let cardBorderClass = dayData.badgeType !== "" ? 'border-warning' : 'border-secondary-subtle';
+        let headerBgClass = dayData.badgeType !== "" ? 'bg-warning-subtle' : 'bg-body';
+
         html += `
           <div class="col">
-            <div class="card h-100 border ${dayData.isHoliday ? 'border-warning' : 'border-secondary-subtle'} bg-body-tertiary rounded-3 overflow-hidden position-relative">
+            <div class="card h-100 border ${cardBorderClass} bg-body-tertiary rounded-3 overflow-hidden position-relative">
         `;
         
         if (dayData.isPast) {
@@ -498,13 +522,13 @@
         }
 
         html += `
-              <div class="card-header ${dayData.isHoliday ? 'bg-warning-subtle' : 'bg-body'} text-center border-bottom py-2">
+              <div class="card-header ${headerBgClass} text-center border-bottom py-2">
                 <div class="fw-bold text-body d-flex justify-content-center align-items-center gap-1" style="font-size: 1.05rem;">
                   ${dayData.dateLabel}
                 </div>
                 <div class="text-body-secondary small fw-medium mt-1">
                   ${dayData.dayName}
-                  ${dayData.isHoliday ? '<span class="badge bg-danger text-white ms-1" style="font-size: 0.65rem;">节假日</span>' : ''}
+                  ${dayData.badgeType !== "" ? `<span class="badge bg-danger text-white ms-1" style="font-size: 0.65rem;">${dayData.badgeType}</span>` : ''}
                 </div>
               </div>
               <div class="card-body d-flex flex-column gap-2 p-2">
@@ -521,14 +545,12 @@
           }
 
           if (dayData.isPast) {
-            // 已过期的格子，强制剥夺特效并变灰
             html += `
               <div class="p-2 rounded text-center fw-bold border small ${statusClass}" style="filter: grayscale(1); opacity: 0.5;">
                 ${slot.time}
               </div>
             `;
           } else if (slot.backText) {
-            // 未过期的格子，且有背板，激活翻转
             html += `
               <div class="flip-container hover-scale">
                 <div class="flip-inner">
@@ -542,7 +564,6 @@
               </div>
             `;
           } else {
-            // 普通的未过期格子
             html += `
               <div class="p-2 rounded text-center fw-bold border small hover-scale ${statusClass}">
                 ${slot.time}
@@ -565,10 +586,9 @@
       return html;
     };
 
-    // --- 挂载活跃星期的排版 ---
+    // --- 挂载排版 ---
     document.getElementById('active-schedule-container').innerHTML = activeWeeks.map(renderWeekHtml).join('');
 
-    // --- 挂载已完成星期的折叠区 ---
     const pastContainer = document.getElementById('past-schedule-container');
     if (pastWeeks.length > 0) {
       pastContainer.innerHTML = `
