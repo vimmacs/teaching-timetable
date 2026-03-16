@@ -75,17 +75,20 @@
       pointer-events: auto;
     }
 
-    /* 蒙版特效与 3D 翻转 CSS */
+    /* 已过期日期的蒙版特效（增强版） */
     .past-mask {
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      background-color: rgba(var(--bs-body-bg-rgb), 0.7); 
-      backdrop-filter: blur(1.5px) grayscale(0.8);
+      /* 加深了蒙版的颜色深度（0.7 -> 0.85） */
+      background-color: rgba(var(--bs-body-bg-rgb), 0.85); 
+      /* 加强了磨砂模糊效果（1.5px -> 2.5px） */
+      backdrop-filter: blur(2.5px);
       z-index: 2;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      /* 保持穿透，但底层卡片已被剥夺悬浮交互 */
       pointer-events: none; 
     }
     .past-mask-icon {
@@ -150,6 +153,8 @@
             <li>我的教学带有明显的个人风格，自创概念术语，自创模型，应试性强，故存在“对高一学生讲授的学习方法跟对高三学生讲授的学习方法完全不同甚至截然相反”的情形，此乃正常。</li>
             <li>与其他老师一样，有学生喜欢我，就一定有学生不喜欢我，此亦正常。只是，我带不了“主观上自己不愿意学好英语”的学生。</li>
             <li>截至2026年3月1日，我与八家机构有达成初步合作意向，如读者有排课需求，敬请尽早联系我，过之不候。</li>
+            <li>以下有每天每个时段的排课色块示意图。补充说明的是，黄色色块表示已有时间不固定的排课、可能有空档，所以这个色块的时间表示有可能没有排课、可抢约成固定的排课时段。</li>
+            <li>当鼠标移动到红色色块时，可以看到该色块翻转到对应的机构名（我已用名称缩写来保护各机构隐私）。</li>
             <li>课程时间可以协商微调。既然能访问这个排课表，说明你知道我是谁、如何联系我。</li>
           </ol>
         </div>
@@ -169,7 +174,7 @@
               <li>我的教学带有明显的个人风格，自创概念术语，自创模型，应试性强，故存在“对高一学生讲授的学习方法跟对高三学生讲授的学习方法完全不同甚至截然相反”的情形，此乃正常。</li>
               <li>与其他老师一样，有学生喜欢我，就一定有学生不喜欢我，此亦正常。只是，我带不了“主观上自己不愿意学好英语”的学生。</li>
               <li>截至2026年3月1日，我与八家机构有达成初步合作意向，如读者有排课需求，敬请尽早联系我，过之不候。</li>
-              <li>以下有每天每个时段的排课色块示意图。补充说明的是，黄色色块表示已有时间不固定的排课、可能有空档，所以这个色块的时间表示有可能没有排课、可抢约。</li>
+              <li>以下有每天每个时段的排课色块示意图。补充说明的是，黄色色块表示已有时间不固定的排课、可能有空档，所以这个色块的时间表示有可能没有排课、可抢约成固定的排课时段。</li>
               <li>当鼠标移动到红色色块时，可以看到该色块翻转到对应的机构名（我已用名称缩写来保护各机构隐私）。</li>
               <li>课程时间可以协商微调。既然能访问这个排课表，说明你知道我是谁、如何联系我。</li>
             </ol>
@@ -180,7 +185,7 @@
       <div class="row align-items-center mb-3">
         <div class="col-8 col-md-6 text-start">
           <h2 class="h6 mb-0 text-body">
-            此排课表更新于 <span class="fw-bold text-primary">3月13日 20:00</span>
+            此排课表更新于 <span class="fw-bold text-primary">3月16日 08:30</span>
           </h2>
         </div>
         
@@ -202,7 +207,7 @@
         </div>
         <div class="d-flex align-items-center gap-2">
           <div class="border border-warning bg-warning-subtle rounded" style="width: 20px; height: 20px;"></div>
-          <span>不固定排课 / 欢迎询空档</span>
+          <span>已有时间不固定的排课 / 欢迎询空档</span>
         </div>
       </div>
 
@@ -210,7 +215,10 @@
   </div>
 
   <div class="container-fluid max-w-7xl px-4">
-    <div id="schedule-container" class="d-flex flex-column gap-4"></div>
+    
+    <div id="active-schedule-container" class="d-flex flex-column gap-4 mb-4"></div>
+
+    <div id="past-schedule-container" class="mb-4"></div>
 
     <div class="text-center mt-5 mb-3 pb-4 pt-4 border-top">
       <p class="fs-4 fw-bold text-primary mb-2">🎉 欢迎提前预约 2026 年暑假排课！</p>
@@ -223,6 +231,8 @@
   <button id="scrollToTopBtn" class="btn btn-primary shadow" title="回到顶部">
     ↑
   </button>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
     // --- 深浅色主题切换逻辑 ---
@@ -273,8 +283,6 @@
     setInterval(updateClock, 1000);
 
     // --- 1. 独立时间模板 ---
-    
-    // 💡 修改：工作日的早、中时段改为 "待定" (黄色)
     const weekdayTemplate = [
       { time: "08:00 - 10:00", status: "待定" },     
       { time: "10:00 - 12:00", status: "待定" },     
@@ -333,19 +341,9 @@
           "10:00 - 12:00": { status: "已排课", backText: "JY.EDU" },
           "13:00 - 15:00": { status: "已排课", backText: "PD.EDU" },
           "15:00 - 17:00": { status: "已排课", backText: "PD.EDU" },
-          "19:00 - 21:00": { status: "已排课", backText: "KX.EDU" },
-          "21:00 - 23:00": { status: "已排课", backText: "KX.EDU" }
-        }
-      },
-     {
-        dates: ["3-22"],
-        changes: {
-          "08:00 - 10:00": { status: "已排课", backText: "KX.EDU" },
-          "10:00 - 12:00": { status: "已排课", backText: "KX.EDU" },
-          "13:00 - 15:00": { status: "已排课", backText: "JY.EDU" },
-          "15:00 - 17:00": "待定",
-          "17:00 - 19:00": "待定",
-          "19:00 - 21:00": { status: "已排课", backText: "KX.EDU" }
+          "17:00 - 19:00": "已排课",
+          "19:00 - 21:00": "已排课",
+          "21:00 - 23:00": "已排课"
         }
       },
       {
@@ -463,15 +461,26 @@
       });
     }
 
-    // --- 渲染页面逻辑 ---
-    const container = document.getElementById('schedule-container');
+    // --- 数据分组：分离已过期的星期和正在进行的星期 ---
+    const pastWeeks = [];
+    const activeWeeks = [];
     
-    container.innerHTML = scheduleData.map(week => `
+    scheduleData.forEach(week => {
+      // 只有当一个星期的 7 天全部都是 "已结束" 时，才把它归入折叠区
+      const isEntireWeekPast = week.days.every(day => day.isPast);
+      if (isEntireWeekPast) {
+        pastWeeks.push(week);
+      } else {
+        activeWeeks.push(week);
+      }
+    });
+
+    // --- 核心渲染函数 ---
+    const renderWeekHtml = (week) => `
       <div class="week-card bg-body rounded-4 shadow-sm border p-3 p-md-4">
         <h3 class="h5 fw-bold text-primary mb-3 pb-2 border-bottom">
           🗓️ ${week.weekTitle}
         </h3>
-        
         <div class="row row-cols-1 cols-lg-7 g-3">
           ${week.days.map(dayData => `
             <div class="col">
@@ -505,25 +514,36 @@
                       statusClass = "bg-danger-subtle border-danger text-danger";
                     }
 
-                    if (slot.backText) {
-                      return `
+                    // 💡 改进核心：如果该日已结束，强行剥夺悬浮效果、翻转能力，并加上极度强烈的纯灰色调
+                    if (dayData.isPast) {
+                      return \`
+                        <div class="p-2 rounded text-center fw-bold border small \${statusClass}" style="filter: grayscale(1); opacity: 0.5;">
+                          \${slot.time}
+                        </div>
+                      \`;
+                    }
+                    // 如果该日未结束，且拥有 backText，渲染 3D 翻转卡片
+                    else if (slot.backText) {
+                      return \`
                         <div class="flip-container hover-scale">
                           <div class="flip-inner">
-                            <div class="p-2 rounded text-center fw-bold border small ${statusClass} flip-front">
-                              ${slot.time}
+                            <div class="p-2 rounded text-center fw-bold border small \${statusClass} flip-front">
+                              \${slot.time}
                             </div>
-                            <div class="p-2 rounded text-center fw-bold border small ${statusClass} flip-back">
-                              ${slot.backText}
+                            <div class="p-2 rounded text-center fw-bold border small \${statusClass} flip-back">
+                              \${slot.backText}
                             </div>
                           </div>
                         </div>
-                      `;
-                    } else {
-                      return `
-                        <div class="p-2 rounded text-center fw-bold border small hover-scale ${statusClass}">
-                          ${slot.time}
+                      \`;
+                    } 
+                    // 如果是普通的未来日期卡片
+                    else {
+                      return \`
+                        <div class="p-2 rounded text-center fw-bold border small hover-scale \${statusClass}">
+                          \${slot.time}
                         </div>
-                      `;
+                      \`;
                     }
                   }).join('')}
                 </div>
@@ -532,7 +552,34 @@
           `).join('')}
         </div>
       </div>
-    `).join('');
+    `;
+
+    // --- 挂载活跃星期的排版 ---
+    document.getElementById('active-schedule-container').innerHTML = activeWeeks.map(renderWeekHtml).join('');
+
+    // --- 挂载已完成星期的折叠区 (如果存在的话) ---
+    const pastContainer = document.getElementById('past-schedule-container');
+    if (pastWeeks.length > 0) {
+      pastContainer.innerHTML = `
+        <div class="accordion shadow-sm" id="pastWeeksAccordion">
+          <div class="accordion-item border-0 rounded-4 overflow-hidden bg-body">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed fw-bold text-secondary bg-body-tertiary" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePastWeeks">
+                📁 点击展开已完成的排课 (已收纳 ${pastWeeks.length} 周的历史记录)
+              </button>
+            </h2>
+            <div id="collapsePastWeeks" class="accordion-collapse collapse" data-bs-parent="#pastWeeksAccordion">
+              <div class="accordion-body bg-body-tertiary p-3 p-md-4 d-flex flex-column gap-4 border-top">
+                ${pastWeeks.map(renderWeekHtml).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      // 如果没有完全过完的星期，就不显示折叠区域
+      pastContainer.innerHTML = '';
+    }
   </script>
 </body>
 </html>
