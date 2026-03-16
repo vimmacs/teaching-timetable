@@ -466,7 +466,6 @@
     const activeWeeks = [];
     
     scheduleData.forEach(week => {
-      // 只有当一个星期的 7 天全部都是 "已结束" 时，才把它归入折叠区
       const isEntireWeekPast = week.days.every(day => day.isPast);
       if (isEntireWeekPast) {
         pastWeeks.push(week);
@@ -514,7 +513,6 @@
                       statusClass = "bg-danger-subtle border-danger text-danger";
                     }
 
-                    // 💡 改进核心：如果该日已结束，强行剥夺悬浮效果、翻转能力，并加上极度强烈的纯灰色调
                     if (dayData.isPast) {
                       return \`
                         <div class="p-2 rounded text-center fw-bold border small \${statusClass}" style="filter: grayscale(1); opacity: 0.5;">
@@ -522,7 +520,6 @@
                         </div>
                       \`;
                     }
-                    // 如果该日未结束，且拥有 backText，渲染 3D 翻转卡片
                     else if (slot.backText) {
                       return \`
                         <div class="flip-container hover-scale">
@@ -537,7 +534,6 @@
                         </div>
                       \`;
                     } 
-                    // 如果是普通的未来日期卡片
                     else {
                       return \`
                         <div class="p-2 rounded text-center fw-bold border small hover-scale \${statusClass}">
@@ -577,7 +573,6 @@
         </div>
       `;
     } else {
-      // 如果没有完全过完的星期，就不显示折叠区域
       pastContainer.innerHTML = '';
     }
   </script>
