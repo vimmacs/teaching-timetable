@@ -149,7 +149,7 @@
             <li>我专注于高考与高中教学辅导，其次也带少量中考与初二学生。</li>
             <li>我的教学带有明显的个人风格，自创概念术语，自创模型，应试性强，故存在“对高一学生讲授的学习方法跟对高三学生讲授的学习方法完全不同甚至截然相反”的情形，此乃正常。</li>
             <li>与其他老师一样，有学生喜欢我，就一定有学生不喜欢我，此亦正常。只是，我带不了“主观上自己不愿意学好英语”的学生。</li>
-            <li>截至2026年3月1日，我与八家机构有达成初步合作意向，如读者有排课需求，敬请尽早联系我，过之不候。</li>
+            <li>截至2026年3月18日，我基本上只有周内每天晚上还可排两次课（预计两天内会定下来），以及周末还可以排两次课；如有需求，敬请尽早咨询。</li>
             <li>以下有每天每个时段的排课色块示意图。补充说明的是，黄色色块表示已有时间不固定的排课、可能有空档，所以这个色块的时间表示有可能没有排课、可抢约成固定的排课时段。</li>
             <li>当鼠标移动到红色色块时，可以看到该色块翻转到对应的机构名（我已用名称缩写来保护各机构隐私）。</li>
             <li>课程时间可以协商微调。既然能访问这个排课表，说明你知道我是谁、如何联系我。</li>
@@ -170,7 +170,7 @@
               <li>我专注于高考与高中教学辅导，其次也带少量中考与初二学生。</li>
               <li>我的教学带有明显的个人风格，自创概念术语，自创模型，应试性强，故存在“对高一学生讲授的学习方法跟对高三学生讲授的学习方法完全不同甚至截然相反”的情形，此乃正常。</li>
               <li>与其他老师一样，有学生喜欢我，就一定有学生不喜欢我，此亦正常。只是，我带不了“主观上自己不愿意学好英语”的学生。</li>
-              <li>截至2026年3月1日，我与八家机构有达成初步合作意向，如读者有排课需求，敬请尽早联系我，过之不候。</li>
+              <li>截至2026年3月18日，我基本上只有周内每天晚上还可排两次课（预计两天内会定下来），以及周末还可以排两次课；如有需求，敬请尽早咨询。</li>
               <li>以下有每天每个时段的排课色块示意图。补充说明的是，黄色色块表示已有时间不固定的排课、可能有空档，所以这个色块的时间表示有可能没有排课、可抢约成固定的排课时段。</li>
               <li>当鼠标移动到红色色块时，可以看到该色块翻转到对应的机构名（我已用名称缩写来保护各机构隐私）。</li>
               <li>课程时间可以协商微调。既然能访问这个排课表，说明你知道我是谁、如何联系我。</li>
@@ -182,7 +182,7 @@
       <div class="row align-items-center mb-3">
         <div class="col-8 col-md-6 text-start">
           <h2 class="h6 mb-0 text-body">
-            此排课表更新于 <span class="fw-bold text-primary">3月16日 10:15</span>
+            此排课表更新于 <span class="fw-bold text-primary">3月18日 23:30</span>
           </h2>
         </div>
         
@@ -284,8 +284,8 @@
       { time: "08:00 - 10:00", status: "待定" },     
       { time: "10:00 - 12:00", status: "待定" },     
       { time: "14:00 - 16:00", status: "待定" }, 
-      { time: "16:00 - 18:00", status: "已排课", backText: "XS.EDU" },   
-      { time: "19:00 - 21:00", status: "已排课", backText: "XS.EDU" }, 
+      { time: "16:00 - 18:00", status: "待定" },   
+      { time: "19:00 - 21:00", status: "待定" }, 
       { time: "21:00 - 23:00", status: "空闲" }      
     ];
 
@@ -315,7 +315,6 @@
     ];
 
     // --- 3. 批量与区间覆盖配置 (Batch Overrides) ---
-    // 💡 修改：将目前的特定排班复制并映射到了 7月的对应日期（7-1~7-5）
     const batchOverrides = [
       {
         dates: ["3-5~3-8", "3-11~3-13", "7-1~7-3"],
@@ -333,24 +332,25 @@
         }
       },
       {
-        dates: ["3-14", "7-4"],
+        dates: ["3-14", "7-4", "3-21"],
         changes: {
           "08:00 - 10:00": { status: "已排课", backText: "JY.EDU" },
           "10:00 - 12:00": { status: "已排课", backText: "JY.EDU" },
           "13:00 - 15:00": { status: "已排课", backText: "PD.EDU" },
           "15:00 - 17:00": { status: "已排课", backText: "PD.EDU" },
-          "17:00 - 19:00": "已排课",
-          "19:00 - 21:00": "已排课",
-          "21:00 - 23:00": "已排课"
+          "17:00 - 19:00": { status: "已排课", backText: "HW.EDU" },
+          "19:00 - 21:00": { status: "已排课", backText: "HW.EDU" },
+          "21:00 - 23:00": { status: "已排课", backText: "YLM.EDU" },
         }
       },
       {
-        dates: ["3-15", "7-5"],
+        dates: ["3-15", "3-22"],
         changes: {
-          "10:00 - 12:00": { status: "已排课", backText: "PD.EDU" },
-          "13:00 - 15:00": { status: "已排课", backText: "HW.EDU" },
-          "15:00 - 17:00": { status: "已排课", backText: "HW.EDU" },
-          "17:00 - 19:00": { status: "已排课", backText: "HW.EDU" }
+          "08:00 - 10:00": { status: "已排课", backText: "WQ.EDU" },
+          "10:00 - 12:00": { status: "已排课", backText: "WQ.EDU" },
+          "13:00 - 15:00": { status: "已排课", backText: "CZ.EDU" },
+          "15:00 - 17:00": { status: "已排课", backText: "PD.EDU" },
+          "17:00 - 19:00": { status: "已排课", backText: "PD.EDU" }
         }
       }
     ];
@@ -386,7 +386,6 @@
     // --- 生成数据逻辑 ---
     const scheduleData = [];
     let currentDate = new Date(2026, 2, 2);   
-    // 💡 修改：将排课计算截止时间延后到了 8月30日
     let endDate = new Date(2026, 7, 30);      
     const dayNames = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
 
@@ -412,21 +411,18 @@
           slots = JSON.parse(JSON.stringify(weekdayTemplate));
         }
         
-        // 💡 核心逻辑：时间段拦截器 (计算当天的特殊属性)
         let columnDate = new Date(currentDate);
         columnDate.setHours(0, 0, 0, 0);
 
         let isHoliday = holidays2026.includes(dateStr);
         let isPast = columnDate < today;
-        let isSummerVacation = (columnDate >= new Date(2026, 6, 13) && columnDate <= new Date(2026, 7, 30)); // 7.13 - 8.30
-        let isAllGreenWeek = (columnDate >= new Date(2026, 6, 6) && columnDate <= new Date(2026, 6, 12));    // 7.6 - 7.12
+        let isSummerVacation = (columnDate >= new Date(2026, 6, 13) && columnDate <= new Date(2026, 7, 30)); 
+        let isAllGreenWeek = (columnDate >= new Date(2026, 6, 6) && columnDate <= new Date(2026, 6, 12));    
         
-        // 确定卡片头部的 Badge 徽章类型
         let badgeType = "";
         if (isSummerVacation) badgeType = "暑假";
         else if (isHoliday) badgeType = "节假日";
 
-        // 规则执行 1：节假日与暑假全部变成“待定(黄)”并擦除翻转文字
         if (badgeType !== "") {
           slots.forEach(slot => {
             slot.status = "待定";
@@ -434,7 +430,6 @@
           });
         }
 
-        // 规则执行 2：全绿的神仙周
         if (isAllGreenWeek) {
           slots.forEach(slot => {
             slot.status = "空闲";
@@ -442,7 +437,6 @@
           });
         }
 
-        // 规则执行 3：处理特定天的精准覆盖
         if (specificOverrides[dateStr]) {
           const dayOverrides = specificOverrides[dateStr];
           slots.forEach(slot => {
@@ -461,7 +455,7 @@
         weekDays.push({
           dateLabel: `${month}月${date}日`,
           dayName: dayNames[dayOfWeek],
-          badgeType: badgeType, // 传入特定的 Badge 给渲染器
+          badgeType: badgeType, 
           isPast: isPast, 
           slots: slots
         });
@@ -479,7 +473,6 @@
       });
     }
 
-    // --- 数据分组：分离已过期的星期和正在进行的星期 ---
     const pastWeeks = [];
     const activeWeeks = [];
     
@@ -492,7 +485,6 @@
       }
     });
 
-    // --- 核心渲染函数 ---
     const renderWeekHtml = (week) => {
       let html = `
         <div class="week-card bg-body rounded-4 shadow-sm border p-3 p-md-4">
@@ -503,7 +495,6 @@
       `;
       
       week.days.forEach(dayData => {
-        // 如果 dayData 传来了 badgeType，这天必定是节假日或暑假，所以边框和底色全部变黄
         let cardBorderClass = dayData.badgeType !== "" ? 'border-warning' : 'border-secondary-subtle';
         let headerBgClass = dayData.badgeType !== "" ? 'bg-warning-subtle' : 'bg-body';
 
@@ -586,7 +577,6 @@
       return html;
     };
 
-    // --- 挂载排版 ---
     document.getElementById('active-schedule-container').innerHTML = activeWeeks.map(renderWeekHtml).join('');
 
     const pastContainer = document.getElementById('past-schedule-container');
