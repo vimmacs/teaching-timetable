@@ -16,6 +16,7 @@
     .sticky-header-wrapper {
       background-color: var(--bs-body-bg);
       top: 0;
+      z-index: 1020;
     }
 
     .hover-scale { transition: all 0.2s ease-in-out; cursor: pointer; }
@@ -130,54 +131,60 @@
       justify-content: center;
     }
 
-    /* 💡 新增：独立的居中大按钮 Tab 样式 */
+    /* 💡 胶囊 Tabs 自定义微调 */
     #scheduleTabs {
-      justify-content: center; /* 居中排列 */
-      gap: 1.5rem; /* 两个按钮之间的间距 */
+      justify-content: center; 
+      gap: 1.5rem; 
       border: none;
-      margin-top: 1rem;
-      margin-bottom: 2.5rem;
+      margin-top: 0.5rem;
+      margin-bottom: 0; /* 在吸顶栏内部，去除底部多余边距 */
     }
     #scheduleTabs .nav-link {
-      padding: 0.8rem 2rem; /* 让按钮看起来像 CTA (Call to action) 大按钮 */
+      padding: 0.8rem 2rem; 
       border-radius: 50px;
       font-size: 1.1rem;
       font-weight: 800;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 6px rgba(0,0,0,0.08); /* 增加立体感 */
+      box-shadow: 0 4px 6px rgba(0,0,0,0.08); 
       border: 2px solid transparent;
       letter-spacing: 0.5px;
     }
     #scheduleTabs .nav-link:hover {
-      transform: translateY(-3px); /* 悬浮时轻微上浮 */
+      transform: translateY(-3px); 
       box-shadow: 0 6px 12px rgba(0,0,0,0.15);
     }
     #scheduleTabs .nav-link:active {
-      transform: translateY(1px); /* 点击时微小下沉 */
+      transform: translateY(1px); 
     }
     
-    /* 蓝色按钮 (学期) */
+    /* 蓝色按钮 (学期) - 强制锁定颜色，防止变成系统默认蓝 */
     .btn-tab-blue {
-      background-color: var(--bs-primary-bg-subtle);
-      color: var(--bs-primary);
+      background-color: var(--bs-primary-bg-subtle) !important;
+      color: var(--bs-primary) !important;
     }
-    .btn-tab-blue.active {
+    .btn-tab-blue:hover {
+      background-color: #cce0ff !important; /* 悬停时轻微加深底色，文字绝不变色 */
+    }
+    .btn-tab-blue.active, .btn-tab-blue.active:hover {
       background-color: var(--bs-primary) !important;
       color: #ffffff !important;
       border-color: var(--bs-primary);
-      box-shadow: 0 6px 15px rgba(13, 110, 253, 0.3); /* 蓝色发光效果 */
+      box-shadow: 0 6px 15px rgba(13, 110, 253, 0.3);
     }
 
-    /* 红色按钮 (暑假) */
+    /* 红色按钮 (暑假) - 强制锁定颜色 */
     .btn-tab-red {
-      background-color: var(--bs-danger-bg-subtle);
-      color: var(--bs-danger);
+      background-color: var(--bs-danger-bg-subtle) !important;
+      color: var(--bs-danger) !important;
     }
-    .btn-tab-red.active {
+    .btn-tab-red:hover {
+      background-color: #f8d7da !important; /* 悬停时加深底色，确保文字依然是红色 */
+    }
+    .btn-tab-red.active, .btn-tab-red.active:hover {
       background-color: var(--bs-danger) !important;
       color: #ffffff !important;
       border-color: var(--bs-danger);
-      box-shadow: 0 6px 15px rgba(220, 53, 69, 0.3); /* 红色发光效果 */
+      box-shadow: 0 6px 15px rgba(220, 53, 69, 0.3); 
     }
   </style>
 </head>
@@ -185,12 +192,13 @@
   
   <div class="container-fluid max-w-7xl px-4">
     <h1 class="text-center text-body fw-bold mb-3 mt-2">2025-2026年度第二学期可排课时间</h1>
-    <p class="text-danger fw-bold text-center mb-5 pb-2 fs-5">
+    <p class="text-danger fw-bold text-center mb-4 pb-2 fs-5">
       如果您有任何课程安排，请立即与我联系。
     </p>
   </div>
 
-  <div class="container-fluid max-w-7xl px-4 d-lg-none mb-4">
+  <!-- 💡 改进：将说明文字统一提出来，放在非吸顶区域，向下滑动时自然移出视野 -->
+  <div class="container-fluid max-w-7xl px-4 mb-4">
     <div class="text-center">
       <fieldset class="intro-fieldset text-center shadow-sm">
         <legend class="intro-legend">ℹ️ 说明</legend>
@@ -209,30 +217,14 @@
     </div>
   </div>
 
-  <div class="sticky-top sticky-header-wrapper shadow-sm border-bottom pb-3 mb-4 pt-2">
+  <!-- 💡 改进：只保留这三个核心操作栏吸顶，极大地节省了手机端的纵向空间 -->
+  <div class="sticky-top sticky-header-wrapper shadow-sm border-bottom pb-3 pt-3 mb-4">
     <div class="container-fluid max-w-7xl px-4">
       
-      <div class="text-center mb-4 d-none d-lg-block">
-        <fieldset class="intro-fieldset text-center shadow-sm">
-          <legend class="intro-legend">ℹ️ 说明</legend>
-          <div class="d-inline-block text-start">
-            <ol class="mb-0 ps-3 text-body-secondary small lh-lg">
-              <li>我专注于高考与高中教学辅导，其次也带少量中考与初二学生。</li>
-              <li>我的教学带有明显的个人风格，自创概念术语，自创模型，应试性强，故存在“对高一学生讲授的学习方法跟对高三学生讲授的学习方法完全不同甚至截然相反”的情形，此乃正常。</li>
-              <li>与其他老师一样，有学生喜欢我，就一定有学生不喜欢我，此亦正常。只是，我带不了“主观上自己不愿意学好英语”的学生。</li>
-              <li>截至2026年3月18日，我基本上只有周内每天晚上还可排两次课（预计两天内会定下来），以及周末还可以排两次课；如有需求，敬请尽早咨询。</li>
-              <li>以下有每天每个时段的排课色块示意图。补充说明的是，黄色色块表示已有时间不固定的排课、可能有空档，所以这个色块的时间表示有可能没有排课、可抢约成固定的排课时段。</li>
-              <li>当鼠标移动到红色色块时，可以看到该色块翻转到对应的机构名（我已用名称缩写来保护各机构隐私）。</li>
-              <li>课程时间可以协商微调。既然能访问这个排课表，说明你知道我是谁、如何联系我。</li>
-            </ol>
-          </div>
-        </fieldset>
-      </div>
-
       <div class="row align-items-center mb-3">
         <div class="col-8 col-md-6 text-start">
           <h2 class="h6 mb-0 text-body">
-            此排课表更新于 <span class="fw-bold text-primary">5月16日 15:10</span>
+            此排课表更新于 <span class="fw-bold text-primary">5月16日 16:00</span>
           </h2>
         </div>
         
@@ -243,7 +235,7 @@
         </div>
       </div>
 
-      <div class="d-flex flex-wrap justify-content-center gap-4 text-body-secondary small fw-medium">
+      <div class="d-flex flex-wrap justify-content-center gap-4 text-body-secondary small fw-medium mb-3">
         <div class="d-flex align-items-center gap-2">
           <div class="border border-success bg-success-subtle rounded" style="width: 20px; height: 20px;"></div>
           <span>空闲 / 可排课</span>
@@ -258,27 +250,25 @@
         </div>
       </div>
 
+      <!-- 💡 改进：大按钮 Tabs 放入吸顶层，方便用户随时切换 -->
+      <ul class="nav" id="scheduleTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active btn-tab-blue" id="semester-tab" data-bs-toggle="tab" data-bs-target="#semester" type="button" role="tab" aria-controls="semester" aria-selected="true">
+            📖 学期内排课
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link btn-tab-red" id="summer-tab" data-bs-toggle="tab" data-bs-target="#summer" type="button" role="tab" aria-controls="summer" aria-selected="false">
+            🏖️ 暑期排课表
+          </button>
+        </li>
+      </ul>
+
     </div>
   </div>
 
   <div class="container-fluid max-w-7xl px-4">
     
-    <!-- 💡 修改：独立的居中双选按钮 -->
-    <ul class="nav" id="scheduleTabs" role="tablist">
-      <li class="nav-item" role="presentation">
-        <!-- 蓝色的学期按钮 -->
-        <button class="nav-link active btn-tab-blue" id="semester-tab" data-bs-toggle="tab" data-bs-target="#semester" type="button" role="tab" aria-controls="semester" aria-selected="true">
-          📖 学期内排课
-        </button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <!-- 红色的暑期按钮 -->
-        <button class="nav-link btn-tab-red" id="summer-tab" data-bs-toggle="tab" data-bs-target="#summer" type="button" role="tab" aria-controls="summer" aria-selected="false">
-          🏖️ 暑期排课表
-        </button>
-      </li>
-    </ul>
-
     <div class="tab-content" id="scheduleTabsContent">
       
       <!-- Tab 1: 学期内 -->
@@ -474,6 +464,7 @@
       let weekStartStr = `${currentDate.getMonth() + 1}月${currentDate.getDate()}日`;
       
       let thisWeekStart = new Date(currentDate);
+      thisWeekStart.setHours(0, 0, 0, 0);
 
       for (let i = 0; i < 7; i++) {
         let month = currentDate.getMonth() + 1;
@@ -546,17 +537,19 @@
       lastDayOfWeek.setDate(lastDayOfWeek.getDate() - 1);
       let weekEndStr = `${lastDayOfWeek.getMonth() + 1}月${lastDayOfWeek.getDate()}日`;
       
-      let isSummerWeek = thisWeekStart >= new Date(2026, 6, 13);
-
       scheduleData.push({
         weekTitle: `${weekStartStr}（星期一）至 ${weekEndStr}（周日）`,
         days: weekDays,
-        isSummerWeek: isSummerWeek
+        weekStartDate: thisWeekStart // 保存星期一的具体日期对象，用于准确分流
       });
     }
 
-    const semesterData = scheduleData.filter(week => !week.isSummerWeek);
-    const summerData = scheduleData.filter(week => week.isSummerWeek);
+    // 💡 核心改进：双轨分流判断。
+    // 只要这一周的星期一是 7 月 13 日之前，它就属于学期版 (含 7.6 神仙周)
+    const semesterData = scheduleData.filter(week => week.weekStartDate < new Date(2026, 6, 13));
+    
+    // 只要这一周的星期一是 7 月 6 日及之后，它就属于暑假版 (含 7.6 神仙周)
+    const summerData = scheduleData.filter(week => week.weekStartDate >= new Date(2026, 6, 6));
 
     const renderWeekHtml = (week) => {
       let html = `
