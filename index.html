@@ -1,3 +1,14 @@
+这个改动非常巧妙！去掉冗余的文字，只保留高度概括的图标，不仅极大地**节省了极其宝贵的吸顶栏横向空间**，还让整个页面的设计语言更倾向于现代化、极简化的 Web App 风格。
+
+为了让这个“纯图标按钮”看起来更精致，我顺手做了一点 UI 升级：
+
+1. **圆形按钮重构**：既然没有了文字，传统的“胶囊形状（pill）”就不再合适。我把它变成了一个**完美的正圆形按钮（Circle Button）**，图标绝对居中，看起来就像 iPhone 控制中心里的开关一样优雅。
+2. **原生 Tooltip 注入**：为你加上了原生的 `title` 悬停提示提示框。鼠标放上去稍作停留，就会浮现出你要求的“页面变暗”或“页面变亮”。
+3. **JS 逻辑精简**：去掉了原有的文字替换逻辑，现在点击时，JavaScript 只负责切换 `☀️` / `🌙` 以及对应的提示文字。
+
+更新时间我改为了 `5月16日 17:00`。请全选你的 `index.html`，用这套极致精简版代码覆盖并保存：
+
+```html
 <!DOCTYPE html>
 <html lang="zh-CN" data-bs-theme="light">
 <head>
@@ -132,10 +143,22 @@
       justify-content: center;
     }
 
+    /* 💡 深浅色切换纯图标按钮样式 */
+    #theme-toggle {
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+    }
+
     /* 💡 Tabs 核心样式 */
     .header-tabs {
       display: flex;
-      flex-wrap: nowrap; /* 强制不换行，并列显示 */
+      flex-wrap: nowrap; 
       gap: 1.25rem; 
       border: none;
     }
@@ -148,7 +171,7 @@
       box-shadow: 0 4px 6px rgba(0,0,0,0.08); 
       border: 2px solid transparent;
       letter-spacing: 0.5px;
-      white-space: nowrap; /* 文字不换行 */
+      white-space: nowrap; 
     }
     .header-tabs .nav-link:hover {
       transform: translateY(-2px); 
@@ -188,35 +211,33 @@
       box-shadow: 0 6px 15px rgba(220, 53, 69, 0.3); 
     }
 
-    /* 💡 移动端及滚动响应式样式 (黑科技区) */
+    /* 移动端及滚动响应式样式 */
     @media (max-width: 991.98px) {
-      /* 手机端初始状态 */
       .header-tabs {
         width: 100%;
-        gap: 0.5rem; /* 缩小按钮间距 */
+        gap: 0.5rem; 
       }
       .header-tabs .nav-item {
-        flex: 1; /* 两个按钮平分宽度 */
+        flex: 1; 
       }
       .header-tabs .nav-link {
         width: 100%;
-        padding: 0.6rem 0.5rem; /* 初始缩小一点内边距以适应屏幕 */
+        padding: 0.6rem 0.5rem; 
         font-size: 0.95rem;
       }
       
-      /* 当页面发生滚动，触发 .scrolled 类时的变形特效 */
       #main-header.scrolled .legend-container {
-        display: none !important; /* 图例瞬间隐藏 */
+        display: none !important; 
       }
       #main-header.scrolled .header-tabs .nav-link {
-        padding: 0.35rem 0.5rem; /* 进一步压缩按钮厚度 */
-        font-size: 0.85rem;      /* 进一步缩小字号 */
+        padding: 0.35rem 0.5rem; 
+        font-size: 0.85rem;      
       }
       #main-header.scrolled {
-        padding-bottom: 0.75rem !important; /* 压缩吸顶栏底部留白 */
+        padding-bottom: 0.75rem !important; 
       }
       #main-header.scrolled .update-row {
-        margin-bottom: 0.5rem !important; /* 压缩更新时间与Tabs的间距 */
+        margin-bottom: 0.5rem !important; 
       }
     }
   </style>
@@ -230,7 +251,6 @@
     </p>
   </div>
 
-  <!-- 💡 改进：静态说明文本框，随页面滑动而自然消失，不占用吸顶空间 -->
   <div class="container-fluid max-w-7xl px-4 mb-4">
     <div class="text-center">
       <fieldset class="intro-fieldset text-center shadow-sm">
@@ -250,7 +270,6 @@
     </div>
   </div>
 
-  <!-- 💡 改进：极致精简的吸顶控制台 -->
   <div class="sticky-top sticky-header-wrapper shadow-sm border-bottom pb-3 pt-3 mb-4" id="main-header">
     <div class="container-fluid max-w-7xl px-4">
       
@@ -258,19 +277,18 @@
       <div class="row align-items-center mb-3 update-row">
         <div class="col-8 col-md-6 text-start">
           <h2 class="h6 mb-0 text-body">
-            此排课表更新于 <span class="fw-bold text-primary">5月16日 16:30</span>
+            此排课表更新于 <span class="fw-bold text-primary">5月16日 17:00</span>
           </h2>
         </div>
+        <!-- 💡 改进：去除了文字，把按钮变成了正圆形，并加入了原生 tooltip -->
         <div class="col-4 col-md-6 text-end">
-          <button id="theme-toggle" class="btn btn-sm btn-outline-secondary rounded-pill fw-medium">
-            🌙 暗色模式
+          <button id="theme-toggle" class="btn btn-outline-secondary rounded-circle shadow-sm" title="页面变暗">
+            🌙
           </button>
         </div>
       </div>
 
       <!-- 第二行：灵活响应式的 Tabs 与 图例容器 -->
-      <!-- 电脑端：左右平分布局，Tabs居中偏左，图例靠最右 -->
-      <!-- 手机端：上下堆叠，图例在上面，Tabs在下面 -->
       <div class="row w-100 align-items-center m-0">
         
         <!-- Tabs 容器 -->
@@ -352,26 +370,29 @@
       const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
       htmlElement.setAttribute('data-bs-theme', newTheme);
       
+      // 💡 改进：去除了文字更改，只更改图标和 Tooltip 的 title 属性
       if (newTheme === 'dark') {
-        themeToggleBtn.innerHTML = '☀️ 亮色模式';
+        themeToggleBtn.innerHTML = '☀️';
+        themeToggleBtn.setAttribute('title', '页面变亮');
         themeToggleBtn.classList.replace('btn-outline-secondary', 'btn-outline-light');
       } else {
-        themeToggleBtn.innerHTML = '🌙 暗色模式';
+        themeToggleBtn.innerHTML = '🌙';
+        themeToggleBtn.setAttribute('title', '页面变暗');
         themeToggleBtn.classList.replace('btn-outline-light', 'btn-outline-secondary');
       }
     });
 
-    // --- 💡 滚动监听：处理回顶部按钮 & 移动端吸顶容器的变形变形 ---
+    // --- 滚动监听 ---
     const scrollToTopBtn = document.getElementById('scrollToTopBtn');
     const mainHeader = document.getElementById('main-header');
 
     window.addEventListener('scroll', () => {
       if (window.scrollY > 50) {
         scrollToTopBtn.classList.add('show');
-        if (mainHeader) mainHeader.classList.add('scrolled'); // 注入滚动变形类
+        if (mainHeader) mainHeader.classList.add('scrolled'); 
       } else {
         scrollToTopBtn.classList.remove('show');
-        if (mainHeader) mainHeader.classList.remove('scrolled'); // 移除滚动变形类
+        if (mainHeader) mainHeader.classList.remove('scrolled'); 
       }
     });
 
@@ -592,11 +613,7 @@
       });
     }
 
-    // 💡 核心逻辑优化：让全绿的 7.6 神仙周存在于两个 Tab 中！
-    // 只要是 7.13 之前的，都在学期表里 (包含 7.6 这周)
     const semesterData = scheduleData.filter(week => week.weekStartDate < new Date(2026, 6, 13));
-    
-    // 只要是 7.6 及之后的，都在暑期表里 (同样包含 7.6 这周)
     const summerData = scheduleData.filter(week => week.weekStartDate >= new Date(2026, 6, 6));
 
     const renderWeekHtml = (week) => {
@@ -732,3 +749,5 @@
   </script>
 </body>
 </html>
+
+```
