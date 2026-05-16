@@ -17,6 +17,7 @@
       background-color: var(--bs-body-bg);
       top: 0;
       z-index: 1020;
+      transition: padding 0.3s ease, box-shadow 0.3s ease;
     }
 
     .hover-scale { transition: all 0.2s ease-in-out; cursor: pointer; }
@@ -131,16 +132,15 @@
       justify-content: center;
     }
 
-    /* 💡 胶囊 Tabs 自定义微调 */
-    #scheduleTabs {
-      justify-content: center; 
-      gap: 1.5rem; 
+    /* 💡 Tabs 核心样式 */
+    .header-tabs {
+      display: flex;
+      flex-wrap: nowrap; /* 强制不换行，并列显示 */
+      gap: 1.25rem; 
       border: none;
-      margin-top: 0.5rem;
-      margin-bottom: 0; /* 在吸顶栏内部，去除底部多余边距 */
     }
-    #scheduleTabs .nav-link {
-      padding: 0.8rem 2rem; 
+    .header-tabs .nav-link {
+      padding: 0.75rem 1.8rem; 
       border-radius: 50px;
       font-size: 1.1rem;
       font-weight: 800;
@@ -148,22 +148,23 @@
       box-shadow: 0 4px 6px rgba(0,0,0,0.08); 
       border: 2px solid transparent;
       letter-spacing: 0.5px;
+      white-space: nowrap; /* 文字不换行 */
     }
-    #scheduleTabs .nav-link:hover {
-      transform: translateY(-3px); 
-      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    .header-tabs .nav-link:hover {
+      transform: translateY(-2px); 
+      box-shadow: 0 6px 12px rgba(0,0,0,0.12);
     }
-    #scheduleTabs .nav-link:active {
+    .header-tabs .nav-link:active {
       transform: translateY(1px); 
     }
     
-    /* 蓝色按钮 (学期) - 强制锁定颜色，防止变成系统默认蓝 */
+    /* 蓝色按钮 - 强行锁定字体颜色 */
     .btn-tab-blue {
       background-color: var(--bs-primary-bg-subtle) !important;
       color: var(--bs-primary) !important;
     }
     .btn-tab-blue:hover {
-      background-color: #cce0ff !important; /* 悬停时轻微加深底色，文字绝不变色 */
+      background-color: #cce0ff !important;
     }
     .btn-tab-blue.active, .btn-tab-blue.active:hover {
       background-color: var(--bs-primary) !important;
@@ -172,19 +173,51 @@
       box-shadow: 0 6px 15px rgba(13, 110, 253, 0.3);
     }
 
-    /* 红色按钮 (暑假) - 强制锁定颜色 */
+    /* 红色按钮 - 强行锁定字体颜色 */
     .btn-tab-red {
       background-color: var(--bs-danger-bg-subtle) !important;
       color: var(--bs-danger) !important;
     }
     .btn-tab-red:hover {
-      background-color: #f8d7da !important; /* 悬停时加深底色，确保文字依然是红色 */
+      background-color: #f8d7da !important; 
     }
     .btn-tab-red.active, .btn-tab-red.active:hover {
       background-color: var(--bs-danger) !important;
       color: #ffffff !important;
       border-color: var(--bs-danger);
       box-shadow: 0 6px 15px rgba(220, 53, 69, 0.3); 
+    }
+
+    /* 💡 移动端及滚动响应式样式 (黑科技区) */
+    @media (max-width: 991.98px) {
+      /* 手机端初始状态 */
+      .header-tabs {
+        width: 100%;
+        gap: 0.5rem; /* 缩小按钮间距 */
+      }
+      .header-tabs .nav-item {
+        flex: 1; /* 两个按钮平分宽度 */
+      }
+      .header-tabs .nav-link {
+        width: 100%;
+        padding: 0.6rem 0.5rem; /* 初始缩小一点内边距以适应屏幕 */
+        font-size: 0.95rem;
+      }
+      
+      /* 当页面发生滚动，触发 .scrolled 类时的变形特效 */
+      #main-header.scrolled .legend-container {
+        display: none !important; /* 图例瞬间隐藏 */
+      }
+      #main-header.scrolled .header-tabs .nav-link {
+        padding: 0.35rem 0.5rem; /* 进一步压缩按钮厚度 */
+        font-size: 0.85rem;      /* 进一步缩小字号 */
+      }
+      #main-header.scrolled {
+        padding-bottom: 0.75rem !important; /* 压缩吸顶栏底部留白 */
+      }
+      #main-header.scrolled .update-row {
+        margin-bottom: 0.5rem !important; /* 压缩更新时间与Tabs的间距 */
+      }
     }
   </style>
 </head>
@@ -197,7 +230,7 @@
     </p>
   </div>
 
-  <!-- 💡 改进：将说明文字统一提出来，放在非吸顶区域，向下滑动时自然移出视野 -->
+  <!-- 💡 改进：静态说明文本框，随页面滑动而自然消失，不占用吸顶空间 -->
   <div class="container-fluid max-w-7xl px-4 mb-4">
     <div class="text-center">
       <fieldset class="intro-fieldset text-center shadow-sm">
@@ -217,17 +250,17 @@
     </div>
   </div>
 
-  <!-- 💡 改进：只保留这三个核心操作栏吸顶，极大地节省了手机端的纵向空间 -->
-  <div class="sticky-top sticky-header-wrapper shadow-sm border-bottom pb-3 pt-3 mb-4">
+  <!-- 💡 改进：极致精简的吸顶控制台 -->
+  <div class="sticky-top sticky-header-wrapper shadow-sm border-bottom pb-3 pt-3 mb-4" id="main-header">
     <div class="container-fluid max-w-7xl px-4">
       
-      <div class="row align-items-center mb-3">
+      <!-- 第一行：更新时间与暗色模式按钮 -->
+      <div class="row align-items-center mb-3 update-row">
         <div class="col-8 col-md-6 text-start">
           <h2 class="h6 mb-0 text-body">
-            此排课表更新于 <span class="fw-bold text-primary">5月16日 16:00</span>
+            此排课表更新于 <span class="fw-bold text-primary">5月16日 16:30</span>
           </h2>
         </div>
-        
         <div class="col-4 col-md-6 text-end">
           <button id="theme-toggle" class="btn btn-sm btn-outline-secondary rounded-pill fw-medium">
             🌙 暗色模式
@@ -235,34 +268,44 @@
         </div>
       </div>
 
-      <div class="d-flex flex-wrap justify-content-center gap-4 text-body-secondary small fw-medium mb-3">
-        <div class="d-flex align-items-center gap-2">
-          <div class="border border-success bg-success-subtle rounded" style="width: 20px; height: 20px;"></div>
-          <span>空闲 / 可排课</span>
+      <!-- 第二行：灵活响应式的 Tabs 与 图例容器 -->
+      <!-- 电脑端：左右平分布局，Tabs居中偏左，图例靠最右 -->
+      <!-- 手机端：上下堆叠，图例在上面，Tabs在下面 -->
+      <div class="row w-100 align-items-center m-0">
+        
+        <!-- Tabs 容器 -->
+        <div class="col-12 col-lg-6 order-2 order-lg-1 d-flex justify-content-center justify-content-lg-start p-0 ps-lg-3">
+          <ul class="nav header-tabs" id="scheduleTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active btn-tab-blue" id="semester-tab" data-bs-toggle="tab" data-bs-target="#semester" type="button" role="tab" aria-controls="semester" aria-selected="true">
+                📖 学期内排课
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link btn-tab-red" id="summer-tab" data-bs-toggle="tab" data-bs-target="#summer" type="button" role="tab" aria-controls="summer" aria-selected="false">
+                🏖️ 暑期排课表
+              </button>
+            </li>
+          </ul>
         </div>
-        <div class="d-flex align-items-center gap-2">
-          <div class="border border-danger bg-danger-subtle rounded" style="width: 20px; height: 20px;"></div>
-          <span>已满 / 已排课</span>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-          <div class="border border-warning bg-warning-subtle rounded" style="width: 20px; height: 20px;"></div>
-          <span>已有时间不固定的排课 / 欢迎询空档</span>
-        </div>
-      </div>
 
-      <!-- 💡 改进：大按钮 Tabs 放入吸顶层，方便用户随时切换 -->
-      <ul class="nav" id="scheduleTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-          <button class="nav-link active btn-tab-blue" id="semester-tab" data-bs-toggle="tab" data-bs-target="#semester" type="button" role="tab" aria-controls="semester" aria-selected="true">
-            📖 学期内排课
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link btn-tab-red" id="summer-tab" data-bs-toggle="tab" data-bs-target="#summer" type="button" role="tab" aria-controls="summer" aria-selected="false">
-            🏖️ 暑期排课表
-          </button>
-        </li>
-      </ul>
+        <!-- 颜色图例容器 -->
+        <div class="legend-container col-12 col-lg-6 order-1 order-lg-2 d-flex flex-wrap justify-content-center justify-content-lg-end gap-3 text-body-secondary small fw-medium p-0 mb-3 mb-lg-0 pe-lg-3">
+          <div class="d-flex align-items-center gap-2">
+            <div class="border border-success bg-success-subtle rounded" style="width: 18px; height: 18px;"></div>
+            <span>空闲 / 可排课</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <div class="border border-danger bg-danger-subtle rounded" style="width: 18px; height: 18px;"></div>
+            <span>已满 / 已排课</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <div class="border border-warning bg-warning-subtle rounded" style="width: 18px; height: 18px;"></div>
+            <span>已有不固定排课 / 欢迎询空档</span>
+          </div>
+        </div>
+
+      </div>
 
     </div>
   </div>
@@ -318,15 +361,20 @@
       }
     });
 
-    // --- 回到顶部逻辑 ---
+    // --- 💡 滚动监听：处理回顶部按钮 & 移动端吸顶容器的变形变形 ---
     const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+    const mainHeader = document.getElementById('main-header');
+
     window.addEventListener('scroll', () => {
-      if (window.scrollY > 300) {
+      if (window.scrollY > 50) {
         scrollToTopBtn.classList.add('show');
+        if (mainHeader) mainHeader.classList.add('scrolled'); // 注入滚动变形类
       } else {
         scrollToTopBtn.classList.remove('show');
+        if (mainHeader) mainHeader.classList.remove('scrolled'); // 移除滚动变形类
       }
     });
+
     scrollToTopBtn.addEventListener('click', () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
@@ -540,15 +588,15 @@
       scheduleData.push({
         weekTitle: `${weekStartStr}（星期一）至 ${weekEndStr}（周日）`,
         days: weekDays,
-        weekStartDate: thisWeekStart // 保存星期一的具体日期对象，用于准确分流
+        weekStartDate: thisWeekStart 
       });
     }
 
-    // 💡 核心改进：双轨分流判断。
-    // 只要这一周的星期一是 7 月 13 日之前，它就属于学期版 (含 7.6 神仙周)
+    // 💡 核心逻辑优化：让全绿的 7.6 神仙周存在于两个 Tab 中！
+    // 只要是 7.13 之前的，都在学期表里 (包含 7.6 这周)
     const semesterData = scheduleData.filter(week => week.weekStartDate < new Date(2026, 6, 13));
     
-    // 只要这一周的星期一是 7 月 6 日及之后，它就属于暑假版 (含 7.6 神仙周)
+    // 只要是 7.6 及之后的，都在暑期表里 (同样包含 7.6 这周)
     const summerData = scheduleData.filter(week => week.weekStartDate >= new Date(2026, 6, 6));
 
     const renderWeekHtml = (week) => {
