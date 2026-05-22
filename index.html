@@ -132,7 +132,7 @@
       justify-content: center;
     }
 
-    /* 💡 深浅色切换纯图标按钮样式 */
+    /* 深浅色切换纯图标按钮样式 */
     #theme-toggle {
       width: 38px;
       height: 38px;
@@ -144,7 +144,7 @@
       transition: all 0.3s ease;
     }
 
-    /* 💡 Tabs 核心样式 */
+    /* Tabs 核心样式 */
     .header-tabs {
       display: flex;
       flex-wrap: nowrap; 
@@ -200,6 +200,24 @@
       box-shadow: 0 6px 15px rgba(220, 53, 69, 0.3); 
     }
 
+    /* 💡 暑期排课进度专属样式 (浅紫背景) */
+    .summer-notice-box {
+      background-color: rgba(111, 66, 193, 0.08); /* 优雅的浅紫底色 */
+      border: 1px solid rgba(111, 66, 193, 0.2);
+      border-left: 5px solid #6f42c1; /* 左侧加粗强调条 */
+      transition: background-color 0.3s ease;
+    }
+    [data-bs-theme="dark"] .summer-notice-box {
+      background-color: rgba(111, 66, 193, 0.15); /* 暗色模式加深底色 */
+      border-color: rgba(111, 66, 193, 0.3);
+    }
+    .summer-notice-title {
+      color: #6f42c1;
+    }
+    [data-bs-theme="dark"] .summer-notice-title {
+      color: #b197fc;
+    }
+
     /* 移动端及滚动响应式样式 */
     @media (max-width: 991.98px) {
       .header-tabs {
@@ -248,7 +266,9 @@
           <ol class="mb-0 ps-3 text-body-secondary small lh-lg">
             <li>我专注于高考与高中教学辅导，其次也带少量中考与初二学生。</li>
             <li>我的教学带有明显的个人风格，自创概念术语，自创模型，应试性强，故存在“对高一学生讲授的学习方法跟对高三学生讲授的学习方法完全不同甚至截然相反”的情形，此乃正常。</li>
-            <li>与其他老师一样，有学生喜欢我，就一定有学生不喜欢我，此亦正常。只是，我带不了“主观上自己不愿意学好英语”的学生。</li>           
+            <li>与其他老师一样，有学生喜欢我，就一定有学生不喜欢我，此亦正常。只是，我带不了“主观上自己不愿意学好英语”的学生。</li>
+            <li>截至2026年3月18日，我基本上只有周内每天晚上还可排两次课（预计两天内会定下来），以及周末还可以排两次课；如有需求，敬请尽早咨询。</li>
+            <li>以下有每天每个时段的排课色块示意图。补充说明的是，黄色色块表示已有时间不固定的排课、可能有空档，所以这个色块的时间表示有可能没有排课、可抢约成固定的排课时段。</li>
             <li>当鼠标移动到红色色块时，可以看到该色块翻转到对应的机构名（我已用名称缩写来保护各机构隐私）。</li>
             <li>课程时间可以协商微调。既然能访问这个排课表，说明你知道我是谁、如何联系我。</li>
           </ol>
@@ -260,14 +280,12 @@
   <div class="sticky-top sticky-header-wrapper shadow-sm border-bottom pb-3 pt-3 mb-4" id="main-header">
     <div class="container-fluid max-w-7xl px-4">
       
-      <!-- 第一行：更新时间与暗色模式按钮 -->
       <div class="row align-items-center mb-3 update-row">
         <div class="col-8 col-md-6 text-start">
           <h2 class="h6 mb-0 text-body">
-            此排课表更新于 <span class="fw-bold text-primary">5月16日 17:00</span>
+            此排课表更新于 <span class="fw-bold text-primary">5月22日 12:30</span>
           </h2>
         </div>
-        <!-- 💡 改进：去除了文字，把按钮变成了正圆形，并加入了原生 tooltip -->
         <div class="col-4 col-md-6 text-end">
           <button id="theme-toggle" class="btn btn-outline-secondary rounded-circle shadow-sm" title="页面变暗">
             🌙
@@ -275,10 +293,8 @@
         </div>
       </div>
 
-      <!-- 第二行：灵活响应式的 Tabs 与 图例容器 -->
       <div class="row w-100 align-items-center m-0">
         
-        <!-- Tabs 容器 -->
         <div class="col-12 col-lg-6 order-2 order-lg-1 d-flex justify-content-center justify-content-lg-start p-0 ps-lg-3">
           <ul class="nav header-tabs" id="scheduleTabs" role="tablist">
             <li class="nav-item" role="presentation">
@@ -294,7 +310,6 @@
           </ul>
         </div>
 
-        <!-- 颜色图例容器 -->
         <div class="legend-container col-12 col-lg-6 order-1 order-lg-2 d-flex flex-wrap justify-content-center justify-content-lg-end gap-3 text-body-secondary small fw-medium p-0 mb-3 mb-lg-0 pe-lg-3">
           <div class="d-flex align-items-center gap-2">
             <div class="border border-success bg-success-subtle rounded" style="width: 18px; height: 18px;"></div>
@@ -327,6 +342,22 @@
 
       <!-- Tab 2: 暑期内 -->
       <div class="tab-pane fade" id="summer" role="tabpanel" aria-labelledby="summer-tab">
+        
+        <!-- 💡 新增：暑期排课进度专属公告模块 -->
+        <div class="summer-notice-box rounded-4 p-3 p-md-4 mb-4 shadow-sm">
+          <div class="summer-notice-title fs-5 fw-bold mb-3">📢 暑期排课进度公告</div>
+          <ol class="mb-0 ps-3 lh-lg text-body-secondary fw-medium" style="font-size: 0.95rem;">
+            <li>2026年暑期分三期排课。</li>
+            <li>截至目前已有的排课安排有：
+              <!-- 使用内嵌无序列表让缩进和排版更清晰优雅 -->
+              <ul class="list-unstyled ps-4 mt-1 mb-0 text-body">
+                <li>1）7月11日 - 7月28日，班课一期，初三升高一，每日具体上课时间待定。</li>
+                <li>2）7月6日 - 7月22日，班课一期，高二升高三，每日具体上课时间待定。</li>
+              </ul>
+            </li>
+          </ol>
+        </div>
+
         <div id="summer-active-container" class="d-flex flex-column gap-4 mb-4"></div>
         <div id="summer-past-container" class="mb-4"></div>
       </div>
@@ -357,7 +388,6 @@
       const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
       htmlElement.setAttribute('data-bs-theme', newTheme);
       
-      // 💡 改进：去除了文字更改，只更改图标和 Tooltip 的 title 属性
       if (newTheme === 'dark') {
         themeToggleBtn.innerHTML = '☀️';
         themeToggleBtn.setAttribute('title', '页面变亮');
