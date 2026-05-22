@@ -3,295 +3,95 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:;">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>可排课时间表</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    @media (min-width: 992px) {
-      .cols-lg-7 > * {
-        flex: 0 0 auto;
-        width: 14.285714%;
-      }
-    }
-    
-    .sticky-header-wrapper {
-      background-color: var(--bs-body-bg);
-      top: 0;
-      z-index: 1020;
-      transition: padding 0.3s ease, box-shadow 0.3s ease;
-    }
+    body { background-color: #f4f6f8 !important; transition: background-color 0.3s ease; }
+    [data-bs-theme="dark"] body { background-color: #0d1117 !important; }
+    .bg-danger-subtle { background-color: #ffe5e5 !important; }
+    .text-danger { color: #d32f2f !important; }
+    .border-danger { border-color: #ffcccc !important; }
+    [data-bs-theme="dark"] .bg-danger-subtle { background-color: rgba(211, 47, 47, 0.2) !important; color: #ff8a80 !important; }
+    .bg-warning-subtle { background-color: #fff4ce !important; }
+    .text-warning-emphasis { color: #b97a00 !important; }
+    .border-warning { border-color: #ffe08a !important; }
+    [data-bs-theme="dark"] .bg-warning-subtle { background-color: rgba(185, 122, 0, 0.2) !important; color: #ffd54f !important; }
+    .bg-success-subtle { background-color: #e6f4ea !important; }
+    .text-success-emphasis { color: #1e7e34 !important; }
+    .border-success { border-color: #c3e6cb !important; }
+    [data-bs-theme="dark"] .bg-success-subtle { background-color: rgba(30, 126, 52, 0.2) !important; color: #81c784 !important; }
 
+    @media (min-width: 992px) {
+      .cols-lg-7 > * { flex: 0 0 auto; width: 14.285714%; }
+    }
+    .sticky-header-wrapper { background-color: var(--bs-body-bg); top: 0; z-index: 1020; transition: padding 0.3s ease, box-shadow 0.3s ease; }
     .hover-scale { transition: all 0.2s ease-in-out; cursor: pointer; }
     .hover-scale:hover { transform: scale(1.02); filter: brightness(0.95); }
+    .week-card { transition: background-color 0.4s ease, box-shadow 0.4s ease, transform 0.3s ease; }
+    .week-card:hover { background-color: var(--bs-body-bg) !important; box-shadow: 0 0.75rem 1.5rem rgba(0,0,0,0.06) !important; transform: translateY(-2px); }
+    [data-bs-theme="dark"] .week-card { background-color: #161b22 !important; border-color: #30363d !important; }
+    [data-bs-theme="dark"] .week-card:hover { background-color: #1c2128 !important; }
+    .intro-fieldset { border: 2px dotted var(--bs-border-color); border-radius: 0.5rem; background-color: var(--bs-body-bg); transition: background-color 0.3s ease; padding: 0 1.5rem 1rem 1.5rem; }
+    [data-bs-theme="dark"] .intro-fieldset { background-color: #161b22; }
+    .intro-legend { width: auto; padding: 0 10px; font-size: 1rem; font-weight: bold; color: var(--bs-primary); margin-bottom: 0; float: none; }
+    #scrollToTopBtn { position: fixed; bottom: 30px; right: 30px; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; z-index: 1050; opacity: 0; transform: translateY(20px); pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.2s ease; }
+    #scrollToTopBtn.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .past-mask { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(var(--bs-body-bg-rgb), 0.85); backdrop-filter: blur(2.5px); z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
+    .past-mask-icon { width: 3rem; height: 3rem; border-radius: 50%; background-color: var(--bs-body-bg); box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--bs-success); margin-bottom: 0.5rem; }
+    .flip-container { perspective: 1000px; }
+    .flip-inner { position: relative; width: 100%; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
+    .flip-container:hover .flip-inner { transform: rotateY(180deg); }
+    .flip-front, .flip-back { width: 100%; backface-visibility: hidden; }
+    .flip-back { position: absolute; top: 0; left: 0; height: 100%; transform: rotateY(180deg); display: flex; align-items: center; justify-content: center; }
+    #theme-toggle { width: 38px; height: 38px; padding: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 1.1rem; transition: all 0.3s ease; }
+    .header-tabs { display: flex; flex-wrap: nowrap; gap: 1.25rem; border: none; }
+    .header-tabs .nav-link { padding: 0.75rem 1.8rem; border-radius: 50px; font-size: 1.1rem; font-weight: 800; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 6px rgba(0,0,0,0.08); border: 2px solid transparent; letter-spacing: 0.5px; white-space: nowrap; }
+    .header-tabs .nav-link:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.12); }
+    .header-tabs .nav-link:active { transform: translateY(1px); }
+    .btn-tab-blue { background-color: #e7f0ff !important; color: #0d6efd !important; }
+    .btn-tab-blue:hover { background-color: #cce0ff !important; }
+    .btn-tab-blue.active, .btn-tab-blue.active:hover { background-color: #0d6efd !important; color: #ffffff !important; border-color: #0d6efd; box-shadow: 0 6px 15px rgba(13, 110, 253, 0.3); }
+    [data-bs-theme="dark"] .btn-tab-blue { background-color: rgba(13, 110, 253, 0.2) !important; color: #6ea8fe !important; }
+    [data-bs-theme="dark"] .btn-tab-blue.active { background-color: #0d6efd !important; color: #fff !important; }
+    .btn-tab-red { background-color: #ffe8eb !important; color: #dc3545 !important; }
+    .btn-tab-red:hover { background-color: #f8d7da !important; }
+    .btn-tab-red.active, .btn-tab-red.active:hover { background-color: #dc3545 !important; color: #ffffff !important; border-color: #dc3545; box-shadow: 0 6px 15px rgba(220, 53, 69, 0.3); }
+    [data-bs-theme="dark"] .btn-tab-red { background-color: rgba(220, 53, 69, 0.2) !important; color: #ea868f !important; }
+    [data-bs-theme="dark"] .btn-tab-red.active { background-color: #dc3545 !important; color: #fff !important; }
+    .summer-notice-box { background-color: rgba(111, 66, 193, 0.06); border: 1px solid rgba(111, 66, 193, 0.15); transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+    [data-bs-theme="dark"] .summer-notice-box { background-color: rgba(111, 66, 193, 0.15); border-color: rgba(111, 66, 193, 0.3); }
+    .summer-notice-title { color: #5a32a3; transition: color 0.35s ease; }
+    [data-bs-theme="dark"] .summer-notice-title { color: #c29ffa; }
+    .summer-notice-text { color: #4a2985; transition: color 0.35s ease; }
+    [data-bs-theme="dark"] .summer-notice-text { color: #d1bbfc; }
+    .summer-notice-box:hover { background-color: #6f42c1 !important; border-color: #6f42c1; box-shadow: 0 0.5rem 1.5rem rgba(111, 66, 193, 0.2) !important; cursor: pointer; }
+    .summer-notice-box:hover .summer-notice-title { color: #ffffff !important; }
+    .summer-notice-box:hover .summer-notice-text { color: #f3e8ff !important; }
+    [data-bs-theme="dark"] .summer-notice-box:hover { background-color: #522e94 !important; border-color: #522e94; box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.3) !important; }
+    [data-bs-theme="dark"] .summer-notice-box:hover .summer-notice-title { color: #ffffff !important; }
+    [data-bs-theme="dark"] .summer-notice-box:hover .summer-notice-text { color: #eadaff !important; }
 
-    .week-card {
-      transition: background-color 0.4s ease, box-shadow 0.4s ease;
-    }
-    .week-card:hover {
-      background-color: var(--bs-secondary-bg) !important;
-      box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.08) !important;
-    }
-
-    /* 个人简介区域样式 */
-    .intro-fieldset {
-      border: 2px dotted var(--bs-border-color);
-      border-radius: 0.5rem;
-      background-color: var(--bs-tertiary-bg); 
-      transition: background-color 0.3s ease; 
-      padding: 0 1.5rem 1rem 1.5rem;
-    }
-    .intro-fieldset:hover {
-      background-color: var(--bs-secondary-bg);
-    }
-    .intro-legend {
-      width: auto;
-      padding: 0 10px;
-      font-size: 1rem;
-      font-weight: bold;
-      color: var(--bs-primary);
-      margin-bottom: 0;
-      float: none;
-    }
-
-    /* 回到顶部按钮 */
-    #scrollToTopBtn {
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      font-weight: bold;
-      z-index: 1050;
-      opacity: 0;
-      transform: translateY(20px);
-      pointer-events: none;
-      transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.2s ease;
-    }
-    #scrollToTopBtn.show {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
-    }
-
-    /* 已过期日期的蒙版特效 */
-    .past-mask {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: rgba(var(--bs-body-bg-rgb), 0.85); 
-      backdrop-filter: blur(2.5px);
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none; 
-    }
-    .past-mask-icon {
-      width: 3rem;
-      height: 3rem;
-      border-radius: 50%;
-      background-color: var(--bs-body-bg);
-      box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      color: var(--bs-success);
-      margin-bottom: 0.5rem;
-    }
-
-    /* 3D 翻转核心 */
-    .flip-container {
-      perspective: 1000px;
-    }
-    .flip-inner {
-      position: relative;
-      width: 100%;
-      transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); 
-      transform-style: preserve-3d;
-    }
-    .flip-container:hover .flip-inner {
-      transform: rotateY(180deg);
-    }
-    .flip-front, .flip-back {
-      width: 100%;
-      backface-visibility: hidden;
-    }
-    .flip-back {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      transform: rotateY(180deg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* 深浅色切换纯图标按钮样式 */
-    #theme-toggle {
-      width: 38px;
-      height: 38px;
-      padding: 0;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-      transition: all 0.3s ease;
-    }
-
-    /* Tabs 核心样式 */
-    .header-tabs {
-      display: flex;
-      flex-wrap: nowrap; 
-      gap: 1.25rem; 
-      border: none;
-    }
-    .header-tabs .nav-link {
-      padding: 0.75rem 1.8rem; 
-      border-radius: 50px;
-      font-size: 1.1rem;
-      font-weight: 800;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 6px rgba(0,0,0,0.08); 
-      border: 2px solid transparent;
-      letter-spacing: 0.5px;
-      white-space: nowrap; 
-    }
-    .header-tabs .nav-link:hover {
-      transform: translateY(-2px); 
-      box-shadow: 0 6px 12px rgba(0,0,0,0.12);
-    }
-    .header-tabs .nav-link:active {
-      transform: translateY(1px); 
-    }
-    
-    /* 蓝色按钮 */
-    .btn-tab-blue {
-      background-color: var(--bs-primary-bg-subtle) !important;
-      color: var(--bs-primary) !important;
-    }
-    .btn-tab-blue:hover {
-      background-color: #cce0ff !important;
-    }
-    .btn-tab-blue.active, .btn-tab-blue.active:hover {
-      background-color: var(--bs-primary) !important;
-      color: #ffffff !important;
-      border-color: var(--bs-primary);
-      box-shadow: 0 6px 15px rgba(13, 110, 253, 0.3);
-    }
-
-    /* 红色按钮 */
-    .btn-tab-red {
-      background-color: var(--bs-danger-bg-subtle) !important;
-      color: var(--bs-danger) !important;
-    }
-    .btn-tab-red:hover {
-      background-color: #f8d7da !important; 
-    }
-    .btn-tab-red.active, .btn-tab-red.active:hover {
-      background-color: var(--bs-danger) !important;
-      color: #ffffff !important;
-      border-color: var(--bs-danger);
-      box-shadow: 0 6px 15px rgba(220, 53, 69, 0.3); 
-    }
-
-    /* 💡 暑期排课进度专属样式 (加入全套平滑过渡动画) */
-    .summer-notice-box {
-      background-color: rgba(111, 66, 193, 0.08); 
-      border: 1px solid rgba(111, 66, 193, 0.2);
-      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    [data-bs-theme="dark"] .summer-notice-box {
-      background-color: rgba(111, 66, 193, 0.15); 
-      border-color: rgba(111, 66, 193, 0.3);
-    }
-    .summer-notice-title {
-      color: #5a32a3; 
-      transition: color 0.35s ease;
-    }
-    [data-bs-theme="dark"] .summer-notice-title {
-      color: #c29ffa;
-    }
-    .summer-notice-text {
-      color: #4a2985;
-      transition: color 0.35s ease;
-    }
-    [data-bs-theme="dark"] .summer-notice-text {
-      color: #d1bbfc;
-    }
-
-    /* 💡 新增：暑期公告区强力交互变色视觉特效 */
-    .summer-notice-box:hover {
-      background-color: #6f42c1 !important; /* 背景平滑变深 */
-      border-color: #6f42c1;
-      box-shadow: 0 0.5rem 1.5rem rgba(111, 66, 193, 0.2) !important;
-      cursor: pointer;
-    }
-    .summer-notice-box:hover .summer-notice-title {
-      color: #ffffff !important; /* 文字平滑变浅白色 */
-    }
-    .summer-notice-box:hover .summer-notice-text {
-      color: #f3e8ff !important; /* 子文本平滑变浅紫色 */
-    }
-
-    /* 暗色模式下的悬停变色特效 */
-    [data-bs-theme="dark"] .summer-notice-box:hover {
-      background-color: #522e94 !important;
-      border-color: #522e94;
-      box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.3) !important;
-    }
-    [data-bs-theme="dark"] .summer-notice-box:hover .summer-notice-title {
-      color: #ffffff !important;
-    }
-    [data-bs-theme="dark"] .summer-notice-box:hover .summer-notice-text {
-      color: #eadaff !important;
-    }
-
-    /* 移动端及滚动响应式样式 */
     @media (max-width: 991.98px) {
-      .header-tabs {
-        width: 100%;
-        gap: 0.5rem; 
-      }
-      .header-tabs .nav-item {
-        flex: 1; 
-      }
-      .header-tabs .nav-link {
-        width: 100%;
-        padding: 0.6rem 0.5rem; 
-        font-size: 0.95rem;
-      }
-      
-      #main-header.scrolled .legend-container {
-        display: none !important; 
-      }
-      #main-header.scrolled .header-tabs .nav-link {
-        padding: 0.35rem 0.5rem; 
-        font-size: 0.85rem;      
-      }
-      #main-header.scrolled {
-        padding-bottom: 0.75rem !important; 
-      }
-      #main-header.scrolled .update-row {
-        margin-bottom: 0.5rem !important; 
-      }
+      .header-tabs { width: 100%; gap: 0.5rem; }
+      .header-tabs .nav-item { flex: 1; }
+      .header-tabs .nav-link { width: 100%; padding: 0.6rem 0.5rem; font-size: 0.95rem; }
+      #main-header.scrolled .legend-container { display: none !important; }
+      #main-header.scrolled .header-tabs .nav-link { padding: 0.35rem 0.5rem; font-size: 0.85rem; }
+      #main-header.scrolled { padding-bottom: 0.75rem !important; }
+      #main-header.scrolled .update-row { margin-bottom: 0.5rem !important; }
     }
   </style>
 </head>
-<body class="bg-body py-4">
-  
+<body class="py-4">
   <div class="container-fluid max-w-7xl px-4">
     <h1 class="text-center text-body fw-bold mb-3 mt-2">2025-2026年度第二学期可排课时间</h1>
-    <p class="text-danger fw-bold text-center mb-4 pb-2 fs-5">
+    <p class="text-danger fw-bold text-center mb-4 pb-2 fs-5" style="color: var(--bs-danger) !important;">
       如果您有任何课程安排，请立即与我联系。
     </p>
   </div>
-
   <div class="container-fluid max-w-7xl px-4 mb-4">
     <div class="text-center">
       <fieldset class="intro-fieldset text-center shadow-sm">
@@ -299,9 +99,9 @@
         <div class="d-inline-block text-start">
           <ol class="mb-0 ps-3 text-body-secondary small lh-lg">
             <li>我专注于高考与高中教学辅导，其次也带少量中考与初二学生。</li>
-            <li>我的教学带有明显的个人风格，自创概念术语，自创模型，应试性强，故存在“对高一学生讲授的学习方法跟对高三学生讲授的学习方法完全不同甚至截截相反”的情形，此乃正常。</li>
-            <li>与其他老师一样，有学生喜欢我，就一定有学生不喜欢我，此亦正常。只是，我带不了“主观上自己不愿意学好英语”或者“没有执行力”的学生。</li>
-            <li>学生的学习习惯非常重要。我强制要求每个学生带好三个本子：笔记本、错题本和默写本。</li>
+            <li>我的教学带有明显的个人风格，自创概念术语，自创模型，应试性强，故存在“对高一学生讲授的学习方法跟对高三学生讲授的学习方法完全不同甚至截然相反”的情形，此乃正常。</li>
+            <li>与其他老师一样，有学生喜欢我，就一定有学生不喜欢我，此亦正常。只是，我带不了“主观上自己不愿意学好英语”的学生。</li>
+            <li>学生的学习习惯非常重要。我强制要求自己的学生带好三个本子：笔记本、错题本和默写本。</li>
             <li>以下有每天每个时段的排课色块示意图。补充说明的是，黄色色块表示已有时间不固定的排课、可能有空档，所以这个色块的时间表示有可能没有排课、可抢约成固定的排课时段。</li>
             <li>当鼠标移动到红色色块时，可以看到该色块翻转到对应的机构名（我已用名称缩写来保护各机构隐私）。</li>
             <li>课程时间可以协商微调。既然能访问这个排课表，说明你知道我是谁、如何联系我。</li>
@@ -310,14 +110,12 @@
       </fieldset>
     </div>
   </div>
-
   <div class="sticky-top sticky-header-wrapper shadow-sm border-bottom pb-3 pt-3 mb-4" id="main-header">
     <div class="container-fluid max-w-7xl px-4">
-      
       <div class="row align-items-center mb-3 update-row">
         <div class="col-8 col-md-6 text-start">
           <h2 class="h6 mb-0 text-body">
-            此排课表更新于 <span class="fw-bold text-primary">5月23日 3:00</span>
+            此排课表更新于 <span class="fw-bold text-primary">5月22日 13:00</span>
           </h2>
         </div>
         <div class="col-4 col-md-6 text-end">
@@ -326,9 +124,7 @@
           </button>
         </div>
       </div>
-
       <div class="row w-100 align-items-center m-0">
-        
         <div class="col-12 col-lg-6 order-2 order-lg-1 d-flex justify-content-center justify-content-lg-start p-0 ps-lg-3">
           <ul class="nav header-tabs" id="scheduleTabs" role="tablist">
             <li class="nav-item" role="presentation">
@@ -343,7 +139,6 @@
             </li>
           </ul>
         </div>
-
         <div class="legend-container col-12 col-lg-6 order-1 order-lg-2 d-flex flex-wrap justify-content-center justify-content-lg-end gap-3 text-body-secondary small fw-medium p-0 mb-3 mb-lg-0 pe-lg-3">
           <div class="d-flex align-items-center gap-2">
             <div class="border border-success bg-success-subtle rounded" style="width: 18px; height: 18px;"></div>
@@ -358,27 +153,20 @@
             <span>已有不固定排课 / 欢迎询空档</span>
           </div>
         </div>
-
       </div>
-
     </div>
   </div>
-
   <div class="container-fluid max-w-7xl px-4">
-    
     <div class="tab-content" id="scheduleTabsContent">
-      
       <div class="tab-pane fade show active" id="semester" role="tabpanel" aria-labelledby="semester-tab">
         <div id="semester-active-container" class="d-flex flex-column gap-4 mb-4"></div>
         <div id="semester-past-container" class="mb-4"></div>
       </div>
-
       <div class="tab-pane fade" id="summer" role="tabpanel" aria-labelledby="summer-tab">
-        
         <div class="summer-notice-box rounded-4 p-3 p-md-4 mb-4 shadow-sm">
           <div class="summer-notice-title fs-5 fw-bold mb-3">📢 暑期排课进度公告</div>
           <ol class="summer-notice-text mb-0 ps-3 lh-lg fw-medium" style="font-size: 0.95rem;">
-            <li>2026年暑期排课进行中。</li>
+            <li>2026年暑期排课进行中，欢迎预约 ^_^ </li>
             <li>截至目前已有的排课安排有：
               <ul class="list-unstyled ps-4 mt-1 mb-0">
                 <li>1）7月11日 - 7月28日，班课一期，初三升高一，每日具体上课时间待定。</li>
@@ -387,13 +175,10 @@
             </li>
           </ol>
         </div>
-
         <div id="summer-active-container" class="d-flex flex-column gap-4 mb-4"></div>
         <div id="summer-past-container" class="mb-4"></div>
       </div>
-
     </div>
-
     <div class="text-center mt-5 mb-3 pb-4 pt-4 border-top">
       <p class="fs-4 fw-bold text-primary mb-2">🎉 欢迎提前预约 2026 年暑假排课！</p>
       <p class="text-body-secondary small mb-0 mt-3">
@@ -401,398 +186,185 @@
       </p>
     </div>
   </div>
-
-  <button id="scrollToTopBtn" class="btn btn-primary shadow" title="回到顶部">
-    ↑
-  </button>
-
+  <button id="scrollToTopBtn" class="btn btn-primary shadow" title="回到顶部">↑</button>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
   <script>
-    // --- 深浅色主题切换逻辑 ---
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    const htmlElement = document.documentElement;
-
-    themeToggleBtn.addEventListener('click', () => {
-      const currentTheme = htmlElement.getAttribute('data-bs-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      htmlElement.setAttribute('data-bs-theme', newTheme);
-      
-      if (newTheme === 'dark') {
-        themeToggleBtn.innerHTML = '☀️';
-        themeToggleBtn.setAttribute('title', '页面变亮');
-        themeToggleBtn.classList.replace('btn-outline-secondary', 'btn-outline-light');
-      } else {
-        themeToggleBtn.innerHTML = '🌙';
-        themeToggleBtn.setAttribute('title', '页面变暗');
-        themeToggleBtn.classList.replace('btn-outline-light', 'btn-outline-secondary');
-      }
-    });
-
-    // --- 滚动监听 ---
-    const scrollToTopBtn = document.getElementById('scrollToTopBtn');
-    const mainHeader = document.getElementById('main-header');
-
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 50) {
-        scrollToTopBtn.classList.add('show');
-        if (mainHeader) mainHeader.classList.add('scrolled'); 
-      } else {
-        scrollToTopBtn.classList.remove('show');
-        if (mainHeader) mainHeader.classList.remove('scrolled'); 
-      }
-    });
-
-    scrollToTopBtn.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    // --- 实时时钟逻辑 ---
-    function updateClock() {
-      const now = new Date();
-      const yyyy = now.getFullYear();
-      const mm = String(now.getMonth() + 1).padStart(2, '0');
-      const dd = String(now.getDate()).padStart(2, '0');
-      const hh = String(now.getHours()).padStart(2, '0');
-      const min = String(now.getMinutes()).padStart(2, '0');
-      const ss = String(now.getSeconds()).padStart(2, '0');
-      
-      const clockEl = document.getElementById('live-clock');
-      if(clockEl) clockEl.textContent = `${yyyy}年${mm}月${dd}日, ${hh}:${min}:${ss}`;
-    }
-    updateClock();
-    setInterval(updateClock, 1000);
-
-    // --- 1. 独立时间模板 ---
-    const weekdayTemplate = [
-      { time: "08:00 - 10:00", status: "待定" },     
-      { time: "10:00 - 12:00", status: "已排课", backText: "HS.EDU" },     
-      { time: "14:00 - 16:00", status: "已排课", backText: "HS.EDU" }, 
-      { time: "16:00 - 18:00", status: "待定" },   
-      { time: "18:30 - 20:30", status: "已排课", backText: "JT.EDU" }, 
-      { time: "20:40 - 22:40", status: "已排课", backText: "JT.EDU" }      
-    ];
-
-    const saturdayTemplate = [
-      { time: "08:00 - 10:00", status: "已排课", backText: "WW.EDU" },
-      { time: "10:00 - 12:00", status: "已排课", backText: "WW.EDU" },
-      { time: "13:00 - 15:00", status: "已排课", backText: "RJ.EDU" },
-      { time: "15:00 - 17:00", status: "已排课", backText: "PD.EDU" },
-      { time: "17:00 - 19:00", status: "已排课", backText: "HS.EDU" },
-      { time: "19:00 - 21:00", status: "待定" },
-      { time: "21:00 - 23:00", status: "待定" }
-    ];
-
-    const sundayTemplate = [
-      { time: "08:00 - 10:00", status: "已排课", backText: "PD.EDU" },
-      { time: "10:00 - 12:00", status: "已排课", backText: "PD.EDU" },
-      { time: "13:00 - 15:00", status: "已排课", backText: "JT.EDU" },
-      { time: "15:00 - 17:00", status: "待定" },
-      { time: "17:00 - 19:00", status: "已排课", backText: "JT.EDU" },
-      { time: "19:30 - 21:30", status: "待定" },
-      { time: "21:30 - 23:30", status: "待定" }
-    ];
-
-    // --- 2. 节假日 ---
-    const holidays2026 = [
-      "4-4", "4-5", "4-6", "5-1", "5-2", "5-3", "5-4", "5-5", "6-19", "6-20", "6-21"
-    ];
-
-    // --- 3. 批量与区间覆盖配置 (Batch Overrides) ---
-    const batchOverrides = [
-      {
-        dates: ["3-5~3-8", "3-11~3-13", "7-1~7-3"],
-        changes: {
-          "08:00 - 10:00": "已排课",
-          "10:00 - 12:00": "已排课",
-          "14:00 - 16:00": "已排课"
-        }
-      },
-      {
-        dates: ["3-7"],
-        changes: {
-          "16:00 - 18:00": "已排课",
-          "19:00 - 21:00": "已排课"
-        }
-      },
-      {
-        dates: ["3-14", "7-4"],
-        changes: {
-          "08:00 - 10:00": { status: "已排课", backText: "JY.EDU" },
-          "10:00 - 12:00": { status: "已排课", backText: "JY.EDU" },
-          "13:00 - 15:00": { status: "已排课", backText: "PD.EDU" },
-          "15:00 - 17:00": { status: "已排课", backText: "PD.EDU" },
-          "17:00 - 19:00": "已排课",
-          "19:00 - 21:00": "已排课",
-          "21:00 - 23:00": "已排课"
-        }
-      },
-      {
-        dates: ["3-15", "7-5"],
-        changes: {
-          "10:00 - 12:00": { status: "已排课", backText: "PD.EDU" },
-          "13:00 - 15:00": { status: "已排课", backText: "HW.EDU" },
-          "15:00 - 17:00": { status: "已排课", backText: "HW.EDU" },
-          "17:00 - 19:00": { status: "已排课", backText: "HW.EDU" }
-        }
-      }
-    ];
-
-    function expandDateRange(dateStr) {
-      if (!dateStr.includes("~")) return [dateStr];
-      const parts = dateStr.split("~").map(s => s.trim());
-      const startParts = parts[0].split("-");
-      const endParts = parts[1].split("-");
-      let start = new Date(2026, parseInt(startParts[0]) - 1, parseInt(startParts[1]));
-      let end = new Date(2026, parseInt(endParts[0]) - 1, parseInt(endParts[1]));
-      
-      const expanded = [];
-      let current = new Date(start);
-      while (current <= end) {
-        expanded.push(`${current.getMonth() + 1}-${current.getDate()}`);
-        current.setDate(current.getDate() + 1);
-      }
-      return expanded;
-    }
-
-    const specificOverrides = {};
-    batchOverrides.forEach(rule => {
-      rule.dates.forEach(dateItem => {
-        const expandedDates = expandDateRange(dateItem);
-        expandedDates.forEach(date => {
-          if (!specificOverrides[date]) specificOverrides[date] = {};
-          Object.assign(specificOverrides[date], rule.changes);
-        });
-      });
-    });
-
-    // --- 生成数据逻辑 ---
-    const scheduleData = [];
-    let currentDate = new Date(2026, 2, 2);   
-    let endDate = new Date(2026, 7, 30);      
-    const dayNames = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    while (currentDate <= endDate) {
-      let weekDays = [];
-      let weekStartStr = `${currentDate.getMonth() + 1}月${currentDate.getDate()}日`;
-      
-      let thisWeekStart = new Date(currentDate);
-      thisWeekStart.setHours(0, 0, 0, 0);
-
-      for (let i = 0; i < 7; i++) {
-        let month = currentDate.getMonth() + 1;
-        let date = currentDate.getDate();
-        let dayOfWeek = currentDate.getDay();
-        let dateStr = `${month}-${date}`;
-        
-        let slots;
-        if (dayOfWeek === 0) {
-          slots = JSON.parse(JSON.stringify(sundayTemplate));
-        } else if (dayOfWeek === 6) {
-          slots = JSON.parse(JSON.stringify(saturdayTemplate));
+    (() => {
+      'use strict';
+      const themeToggleBtn = document.getElementById('theme-toggle');
+      const htmlElement = document.documentElement;
+      themeToggleBtn.addEventListener('click', () => {
+        const currentTheme = htmlElement.getAttribute('data-bs-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        htmlElement.setAttribute('data-bs-theme', newTheme);
+        if (newTheme === 'dark') {
+          themeToggleBtn.innerHTML = '☀️';
+          themeToggleBtn.setAttribute('title', '页面变亮');
+          themeToggleBtn.classList.replace('btn-outline-secondary', 'btn-outline-light');
         } else {
-          slots = JSON.parse(JSON.stringify(weekdayTemplate));
+          themeToggleBtn.innerHTML = '🌙';
+          themeToggleBtn.setAttribute('title', '页面变暗');
+          themeToggleBtn.classList.replace('btn-outline-light', 'btn-outline-secondary');
         }
-        
-        let columnDate = new Date(currentDate);
-        columnDate.setHours(0, 0, 0, 0);
-
-        let isHoliday = holidays2026.includes(dateStr);
-        let isPast = columnDate < today;
-        let isSummerVacation = (columnDate >= new Date(2026, 6, 13) && columnDate <= new Date(2026, 7, 30)); 
-        let isAllGreenWeek = (columnDate >= new Date(2026, 6, 6) && columnDate <= new Date(2026, 6, 12));    
-        
-        let badgeType = "";
-        if (isSummerVacation) badgeType = "暑假";
-        else if (isHoliday) badgeType = "节假日";
-
-        if (badgeType !== "") {
-          slots.forEach(slot => {
-            slot.status = "待定";
-            delete slot.backText; 
-          });
+      });
+      const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+      const mainHeader = document.getElementById('main-header');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          scrollToTopBtn.classList.add('show');
+          if (mainHeader) mainHeader.classList.add('scrolled'); 
+        } else {
+          scrollToTopBtn.classList.remove('show');
+          if (mainHeader) mainHeader.classList.remove('scrolled'); 
         }
-
-        if (isAllGreenWeek) {
-          slots.forEach(slot => {
-            slot.status = "空闲";
-            delete slot.backText; 
-          });
-        }
-
-        if (specificOverrides[dateStr]) {
-          const dayOverrides = specificOverrides[dateStr];
-          slots.forEach(slot => {
-            if (dayOverrides[slot.time]) {
-              const overrideData = dayOverrides[slot.time];
-              if (typeof overrideData === 'string') {
-                slot.status = overrideData;
-              } else {
-                if (overrideData.status) slot.status = overrideData.status;
-                if (overrideData.backText) slot.backText = overrideData.backText;
+      });
+      scrollToTopBtn.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+      function updateClock() {
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        const hh = String(now.getHours()).padStart(2, '0');
+        const min = String(now.getMinutes()).padStart(2, '0');
+        const ss = String(now.getSeconds()).padStart(2, '0');
+        const clockEl = document.getElementById('live-clock');
+        if(clockEl) clockEl.textContent = `${yyyy}年${mm}月${dd}日, ${hh}:${min}:${ss}`;
+      }
+      updateClock();
+      setInterval(updateClock, 1000);
+      const weekdayTemplate = Object.freeze([
+        { time: "08:00 - 10:00", status: "待定" },     
+        { time: "10:00 - 12:00", status: "已排课", backText: "HS.EDU" },     
+        { time: "14:00 - 16:00", status: "已排课", backText: "HS.EDU" }, 
+        { time: "16:00 - 18:00", status: "待定" },   
+        { time: "18:30 - 20:30", status: "已排课", backText: "JT.EDU" }, 
+        { time: "20:40 - 22:40", status: "已排课", backText: "JT.EDU" }      
+      ]);
+      const saturdayTemplate = Object.freeze([
+        { time: "08:00 - 10:00", status: "已排课", backText: "WW.EDU" },
+        { time: "10:00 - 12:00", status: "已排课", backText: "WW.EDU" },
+        { time: "13:00 - 15:00", status: "已排课", backText: "RJ.EDU" },
+        { time: "15:00 - 17:00", status: "已排课", backText: "PD.EDU" },
+        { time: "17:00 - 19:00", status: "已排课", backText: "HS.EDU" },
+        { time: "19:00 - 21:00", status: "待定" },
+        { time: "21:00 - 23:00", status: "待定" }
+      ]);
+      const sundayTemplate = Object.freeze([
+        { time: "08:00 - 10:00", status: "已排课", backText: "PD.EDU" },
+        { time: "10:00 - 12:00", status: "已排课", backText: "PD.EDU" },
+        { time: "13:00 - 15:00", status: "已排课", backText: "JT.EDU" },
+        { time: "15:00 - 17:00", status: "待定" },
+        { time: "17:00 - 19:00", status: "已排课", backText: "JT.EDU" },
+        { time: "19:30 - 21:30", status: "待定" },
+        { time: "21:30 - 23:30", status: "待定" }
+      ]);
+      const holidays2026 = Object.freeze([
+        "4-4", "4-5", "4-6", "5-1", "5-2", "5-3", "5-4", "5-5", "6-19", "6-20", "6-21"
+      ]);
+      const batchOverrides = [
+        { dates: ["3-5~3-8", "3-11~3-13", "7-1~7-3"], changes: { "08:00 - 10:00": "已排课", "10:00 - 12:00": "已排课", "14:00 - 16:00": "已排课" } },
+        { dates: ["3-7"], changes: { "16:00 - 18:00": "已排课", "19:00 - 21:00": "已排课" } },
+        { dates: ["3-14", "7-4"], changes: { "08:00 - 10:00": { status: "已排课", backText: "JY.EDU" }, "10:00 - 12:00": { status: "已排课", backText: "JY.EDU" }, "13:00 - 15:00": { status: "已排课", backText: "PD.EDU" }, "15:00 - 17:00": { status: "已排课", backText: "PD.EDU" }, "17:00 - 19:00": "已排课", "19:00 - 21:00": "已排课", "21:00 - 23:00": "已排课" } },
+        { dates: ["3-15", "7-5"], changes: { "10:00 - 12:00": { status: "已排课", backText: "PD.EDU" }, "13:00 - 15:00": { status: "已排课", backText: "HW.EDU" }, "15:00 - 17:00": { status: "已排课", backText: "HW.EDU" }, "17:00 - 19:00": { status: "已排课", backText: "HW.EDU" } } }
+      ];
+      function expandDateRange(dateStr) {
+        if (!dateStr.includes("~")) return [dateStr];
+        const parts = dateStr.split("~").map(s => s.trim());
+        const startParts = parts[0].split("-");
+        const endParts = parts[1].split("-");
+        let start = new Date(2026, parseInt(startParts[0]) - 1, parseInt(startParts[1]));
+        let end = new Date(2026, parseInt(endParts[0]) - 1, parseInt(endParts[1]));
+        const expanded = [];
+        let current = new Date(start);
+        while (current <= end) { expanded.push(`${current.getMonth() + 1}-${current.getDate()}`); current.setDate(current.getDate() + 1); }
+        return expanded;
+      }
+      const specificOverrides = {};
+      batchOverrides.forEach(rule => { rule.dates.forEach(dateItem => { const expandedDates = expandDateRange(dateItem); expandedDates.forEach(date => { if (!specificOverrides[date]) specificOverrides[date] = {}; Object.assign(specificOverrides[date], rule.changes); }); }); });
+      const scheduleData = [];
+      let currentDate = new Date(2026, 2, 2);   
+      let endDate = new Date(2026, 7, 30);      
+      const dayNames = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      while (currentDate <= endDate) {
+        let weekDays = [];
+        let weekStartStr = `${currentDate.getMonth() + 1}月${currentDate.getDate()}日`;
+        let thisWeekStart = new Date(currentDate);
+        thisWeekStart.setHours(0, 0, 0, 0);
+        for (let i = 0; i < 7; i++) {
+          let month = currentDate.getMonth() + 1;
+          let date = currentDate.getDate();
+          let dayOfWeek = currentDate.getDay();
+          let dateStr = `${month}-${date}`;
+          let slots;
+          if (dayOfWeek === 0) { slots = JSON.parse(JSON.stringify(sundayTemplate)); } else if (dayOfWeek === 6) { slots = JSON.parse(JSON.stringify(saturdayTemplate)); } else { slots = JSON.parse(JSON.stringify(weekdayTemplate)); }
+          let columnDate = new Date(currentDate);
+          columnDate.setHours(0, 0, 0, 0);
+          let isHoliday = holidays2026.includes(dateStr);
+          let isPast = columnDate < today;
+          let isSummerVacation = (columnDate >= new Date(2026, 6, 13) && columnDate <= new Date(2026, 7, 30)); 
+          let isAllGreenWeek = (columnDate >= new Date(2026, 6, 6) && columnDate <= new Date(2026, 6, 12));    
+          let badgeType = "";
+          if (isSummerVacation) badgeType = "暑假"; else if (isHoliday) badgeType = "节假日";
+          if (badgeType !== "") { slots.forEach(slot => { slot.status = "待定"; delete slot.backText; }); }
+          if (isAllGreenWeek) { slots.forEach(slot => { slot.status = "空闲"; delete slot.backText; }); }
+          if (specificOverrides[dateStr]) {
+            const dayOverrides = specificOverrides[dateStr];
+            slots.forEach(slot => {
+              if (dayOverrides[slot.time]) {
+                const overrideData = dayOverrides[slot.time];
+                if (typeof overrideData === 'string') { slot.status = overrideData; } else { if (overrideData.status) slot.status = overrideData.status; if (overrideData.backText) slot.backText = overrideData.backText; }
               }
+            });
+          }
+          weekDays.push({ dateLabel: `${month}月${date}日`, dayName: dayNames[dayOfWeek], badgeType: badgeType, isPast: isPast, slots: slots });
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+        let lastDayOfWeek = new Date(currentDate);
+        lastDayOfWeek.setDate(lastDayOfWeek.getDate() - 1);
+        let weekEndStr = `${lastDayOfWeek.getMonth() + 1}月${lastDayOfWeek.getDate()}日`;
+        scheduleData.push({ weekTitle: `${weekStartStr}（星期一）至 ${weekEndStr}（周日）`, days: weekDays, weekStartDate: thisWeekStart });
+      }
+      const semesterData = scheduleData.filter(week => week.weekStartDate < new Date(2026, 6, 13));
+      const summerData = scheduleData.filter(week => week.weekStartDate >= new Date(2026, 6, 6));
+      const renderWeekHtml = (week) => {
+        let html = `<div class="week-card bg-body rounded-4 shadow-sm border p-3 p-md-4"><h3 class="h5 fw-bold text-primary mb-3 pb-2 border-bottom">🗓️ ${week.weekTitle}</h3><div class="row row-cols-1 cols-lg-7 g-3">`;
+        week.days.forEach(dayData => {
+          let cardBorderClass = dayData.badgeType !== "" ? 'border-warning' : 'border-secondary-subtle';
+          let headerBgClass = dayData.badgeType !== "" ? 'bg-warning-subtle' : 'bg-body';
+          html += `<div class="col"><div class="card h-100 border ${cardBorderClass} bg-body-tertiary rounded-3 overflow-hidden position-relative">`;
+          if (dayData.isPast) { html += `<div class="past-mask"><div class="past-mask-icon">✓</div><span class="fw-bold text-body-secondary small">已结束</span></div>`; }
+          html += `<div class="card-header ${headerBgClass} text-center border-bottom py-2"><div class="fw-bold text-body d-flex justify-content-center align-items-center gap-1" style="font-size: 1.05rem;">${dayData.dateLabel}</div><div class="text-body-secondary small fw-medium mt-1">${dayData.dayName}${dayData.badgeType !== "" ? `<span class="badge bg-danger text-white ms-1" style="font-size: 0.65rem;">${dayData.badgeType}</span>` : ''}</div></div><div class="card-body d-flex flex-column gap-2 p-2">`;
+          dayData.slots.forEach(slot => {
+            let statusClass = "";
+            if (slot.status === '空闲') { statusClass = "bg-success-subtle border-success text-success-emphasis"; } else if (slot.status === '待定') { statusClass = "bg-warning-subtle border-warning text-warning-emphasis"; } else if (slot.status === '已排课') { statusClass = "bg-danger-subtle border-danger text-danger"; }
+            if (dayData.isPast) {
+              html += `<div class="p-2 rounded text-center fw-bold border small ${statusClass}" style="filter: grayscale(1); opacity: 0.5;">${slot.time}</div>`;
+            } else if (slot.backText) {
+              html += `<div class="flip-container hover-scale"><div class="flip-inner"><div class="p-2 rounded text-center fw-bold border small ${statusClass} flip-front">${slot.time}</div><div class="p-2 rounded text-center fw-bold border small ${statusClass} flip-back">${slot.backText}</div></div></div>`;
+            } else {
+              html += `<div class="p-2 rounded text-center fw-bold border small hover-scale ${statusClass}">${slot.time}</div>`;
             }
           });
-        }
-
-        weekDays.push({
-          dateLabel: `${month}月${date}日`,
-          dayName: dayNames[dayOfWeek],
-          badgeType: badgeType, 
-          isPast: isPast, 
-          slots: slots
+          html += `</div></div></div>`;
         });
-        
-        currentDate.setDate(currentDate.getDate() + 1);
+        html += `</div></div>`;
+        return html;
+      };
+      function renderTabContent(data, activeContainerId, pastContainerId, accordionPrefix) {
+        const pastWeeks = [];
+        const activeWeeks = [];
+        data.forEach(week => { const isEntireWeekPast = week.days.every(day => day.isPast); if (isEntireWeekPast) pastWeeks.push(week); else activeWeeks.push(week); });
+        document.getElementById(activeContainerId).innerHTML = activeWeeks.map(renderWeekHtml).join('');
+        const pastContainer = document.getElementById(pastContainerId);
+        if (pastWeeks.length > 0) {
+          pastContainer.innerHTML = `<div class="accordion shadow-sm" id="${accordionPrefix}Accordion"><div class="accordion-item border-0 rounded-4 overflow-hidden bg-body"><h2 class="accordion-header"><button class="accordion-button collapsed fw-bold text-secondary bg-body-tertiary" type="button" data-bs-toggle="collapse" data-bs-target="#${accordionPrefix}Collapse">📁 点击展开已完成的排课 (已收纳 ${pastWeeks.length} 周的历史记录)</button></h2><div id="${accordionPrefix}Collapse" class="accordion-collapse collapse" data-bs-parent="#${accordionPrefix}Accordion"><div class="accordion-body bg-body-tertiary p-3 p-md-4 d-flex flex-column gap-4 border-top">${pastWeeks.map(renderWeekHtml).join('')}</div></div></div></div>`;
+        } else { pastContainer.innerHTML = ''; }
       }
-      
-      let lastDayOfWeek = new Date(currentDate);
-      lastDayOfWeek.setDate(lastDayOfWeek.getDate() - 1);
-      let weekEndStr = `${lastDayOfWeek.getMonth() + 1}月${lastDayOfWeek.getDate()}日`;
-      
-      scheduleData.push({
-        weekTitle: `${weekStartStr}（星期一）至 ${weekEndStr}（周日）`,
-        days: weekDays,
-        weekStartDate: thisWeekStart 
-      });
-    }
-
-    const semesterData = scheduleData.filter(week => week.weekStartDate < new Date(2026, 6, 13));
-    const summerData = scheduleData.filter(week => week.weekStartDate >= new Date(2026, 6, 6));
-
-    const renderWeekHtml = (week) => {
-      let html = `
-        <div class="week-card bg-body rounded-4 shadow-sm border p-3 p-md-4">
-          <h3 class="h5 fw-bold text-primary mb-3 pb-2 border-bottom">
-            🗓️ ${week.weekTitle}
-          </h3>
-          <div class="row row-cols-1 cols-lg-7 g-3">
-      `;
-      
-      week.days.forEach(dayData => {
-        let cardBorderClass = dayData.badgeType !== "" ? 'border-warning' : 'border-secondary-subtle';
-        let headerBgClass = dayData.badgeType !== "" ? 'bg-warning-subtle' : 'bg-body';
-
-        html += `
-          <div class="col">
-            <div class="card h-100 border ${cardBorderClass} bg-body-tertiary rounded-3 overflow-hidden position-relative">
-        `;
-        
-        if (dayData.isPast) {
-          html += `
-            <div class="past-mask">
-              <div class="past-mask-icon">✓</div>
-              <span class="fw-bold text-body-secondary small">已结束</span>
-            </div>
-          `;
-        }
-
-        html += `
-              <div class="card-header ${headerBgClass} text-center border-bottom py-2">
-                <div class="fw-bold text-body d-flex justify-content-center align-items-center gap-1" style="font-size: 1.05rem;">
-                  ${dayData.dateLabel}
-                </div>
-                <div class="text-body-secondary small fw-medium mt-1">
-                  ${dayData.dayName}
-                  ${dayData.badgeType !== "" ? `<span class="badge bg-danger text-white ms-1" style="font-size: 0.65rem;">${dayData.badgeType}</span>` : ''}
-                </div>
-              </div>
-              <div class="card-body d-flex flex-column gap-2 p-2">
-        `;
-
-        dayData.slots.forEach(slot => {
-          let statusClass = "";
-          if (slot.status === '空闲') {
-            statusClass = "bg-success-subtle border-success text-success-emphasis";
-          } else if (slot.status === '待定') {
-            statusClass = "bg-warning-subtle border-warning text-warning-emphasis";
-          } else if (slot.status === '已排课') {
-            statusClass = "bg-danger-subtle border-danger text-danger";
-          }
-
-          if (dayData.isPast) {
-            html += `
-              <div class="p-2 rounded text-center fw-bold border small ${statusClass}" style="filter: grayscale(1); opacity: 0.5;">
-                ${slot.time}
-              </div>
-            `;
-          } else if (slot.backText) {
-            html += `
-              <div class="flip-container hover-scale">
-                <div class="flip-inner">
-                  <div class="p-2 rounded text-center fw-bold border small ${statusClass} flip-front">
-                    ${slot.time}
-                  </div>
-                  <div class="p-2 rounded text-center fw-bold border small ${statusClass} flip-back">
-                    ${slot.backText}
-                  </div>
-                </div>
-              </div>
-            `;
-          } else {
-            html += `
-              <div class="p-2 rounded text-center fw-bold border small hover-scale ${statusClass}">
-                ${slot.time}
-              </div>
-            `;
-          }
-        });
-
-        html += `
-              </div>
-            </div>
-          </div>
-        `;
-      });
-      
-      html += `
-          </div>
-        </div>
-      `;
-      return html;
-    };
-
-    function renderTabContent(data, activeContainerId, pastContainerId, accordionPrefix) {
-      const pastWeeks = [];
-      const activeWeeks = [];
-      
-      data.forEach(week => {
-        const isEntireWeekPast = week.days.every(day => day.isPast);
-        if (isEntireWeekPast) pastWeeks.push(week);
-        else activeWeeks.push(week);
-      });
-
-      document.getElementById(activeContainerId).innerHTML = activeWeeks.map(renderWeekHtml).join('');
-
-      const pastContainer = document.getElementById(pastContainerId);
-      if (pastWeeks.length > 0) {
-        pastContainer.innerHTML = `
-          <div class="accordion shadow-sm" id="${accordionPrefix}Accordion">
-            <div class="accordion-item border-0 rounded-4 overflow-hidden bg-body">
-              <h2 class="accordion-header">
-                <button class="accordion-button collapsed fw-bold text-secondary bg-body-tertiary" type="button" data-bs-toggle="collapse" data-bs-target="#${accordionPrefix}Collapse">
-                  📁 点击展开已完成的排课 (已收纳 ${pastWeeks.length} 周的历史记录)
-                </button>
-              </h2>
-              <div id="${accordionPrefix}Collapse" class="accordion-collapse collapse" data-bs-parent="#${accordionPrefix}Accordion">
-                <div class="accordion-body bg-body-tertiary p-3 p-md-4 d-flex flex-column gap-4 border-top">
-                  ${pastWeeks.map(renderWeekHtml).join('')}
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-      } else {
-        pastContainer.innerHTML = '';
-      }
-    }
-
-    renderTabContent(semesterData, 'semester-active-container', 'semester-past-container', 'semesterPast');
-    renderTabContent(summerData, 'summer-active-container', 'summer-past-container', 'summerPast');
-
+      renderTabContent(semesterData, 'semester-active-container', 'semester-past-container', 'semesterPast');
+      renderTabContent(summerData, 'summer-active-container', 'summer-past-container', 'summerPast');
+    })(); 
   </script>
 </body>
 </html>
