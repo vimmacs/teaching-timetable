@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="zh-CN" data-bs-theme="light">
 <head>
@@ -34,9 +35,9 @@
     .week-card:hover { background-color: var(--bs-body-bg) !important; box-shadow: 0 0.75rem 1.5rem rgba(0,0,0,0.06) !important; transform: translateY(-2px); }
     [data-bs-theme="dark"] .week-card { background-color: #161b22 !important; border-color: #30363d !important; }
     [data-bs-theme="dark"] .week-card:hover { background-color: #1c2128 !important; }
-    .intro-fieldset { border: 2px dotted var(--bs-border-color); border-radius: 0.5rem; background-color: var(--bs-body-bg); transition: background-color 0.3s ease; padding: 0 1.5rem 1rem 1.5rem; }
+    .intro-fieldset { border: 2px dotted var(--bs-border-color); border-radius: 0.5rem; background-color: var(--bs-body-bg); transition: background-color 0.3s ease; padding: 0 1.5rem 1rem 1.5rem; text-align: justify; }
     [data-bs-theme="dark"] .intro-fieldset { background-color: #161b22; }
-    .intro-legend { width: auto; padding: 0 10px; font-size: 1rem; font-weight: bold; color: var(--bs-primary); margin-bottom: 0; float: none; }
+    .intro-legend { width: auto; padding: 0 10px; font-size: 1rem; font-weight: bold; color: var(--bs-primary); margin-bottom: 0; float: none; text-align: center; }
     #scrollToTopBtn { position: fixed; bottom: 30px; right: 30px; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; z-index: 1050; opacity: 0; transform: translateY(20px); pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.2s ease; }
     #scrollToTopBtn.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
     .past-mask { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(var(--bs-body-bg-rgb), 0.85); backdrop-filter: blur(2.5px); z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
@@ -92,30 +93,47 @@
       如果您有任何课程安排，请立即与我联系。
     </p>
   </div>
+  
   <div class="container-fluid max-w-7xl px-4 mb-4">
-    <div class="text-center">
-      <fieldset class="intro-fieldset text-center shadow-sm">
+    <div class="d-flex justify-content-center">
+      <fieldset class="intro-fieldset shadow-sm w-100" style="max-width: 900px;">
         <legend class="intro-legend">ℹ️ 说明</legend>
-        <div class="d-inline-block text-start">
+        <div class="d-inline-block text-start w-100">
           <ol class="mb-0 ps-3 text-body-secondary small lh-lg">
-            <li>我专注于高考与高中教学辅导，其次也带少量中考与初二学生。</li>
-            <li>我的教学带有明显的个人风格，自创概念术语，自创模型，应试性强，故存在“对高一学生讲授的学习方法跟对高三学生讲授的学习方法完全不同甚至截然相反”的情形，此乃正常。</li>
-            <li>与其他老师一样，有学生喜欢我，就一定有学生不喜欢我，此亦正常。只是，我带不了“主观上自己不愿意学好英语”的学生。</li>
-            <li>学生的学习习惯非常重要。我强制要求自己的学生带好三个本子：笔记本、错题本和默写本。</li>
-            <li>以下有每天每个时段的排课色块示意图。补充说明的是，黄色色块表示已有时间不固定的排课、可能有空档，所以这个色块的时间表示有可能没有排课、可抢约成固定的排课时段。</li>
-            <li>当鼠标移动到红色色块时，可以看到该色块翻转到对应的机构名（我已用名称缩写来保护各机构隐私）。</li>
-            <li>课程时间可以协商微调。既然能访问这个排课表，说明你知道我是谁、如何联系我。</li>
+            <li>我专注于高考与高中教学辅导，其次也带少量中考学生。</li>
+            <li class="mt-1">我的教学带有明显的个人风格，自创概念术语，自创模型，应试性强，故：
+              <ul class="list-unstyled ps-3 mb-0 mt-1">
+                <li>1) 存在“对高一学生讲授的学习方法跟对高三学生讲授的学习方法完全不同甚至截然相反”的情形，此乃正常。</li>
+                <li>2) 不接受任何合作机构对我教学活动的干涉，包括机构参考其他英语老师的做法，要求我这样那样。</li>
+              </ul>
+            </li>
+            <li class="mt-1">我有能力边界。我不是万人迷式的英语老师，做不到让每个学生都满意。所以：
+              <ul class="list-unstyled ps-3 mb-0 mt-1">
+                <li>1) 有学生喜欢我，就一定有学生不喜欢我，此亦正常。</li>
+                <li>2) 我有<strong>“三不带”</strong>：
+                  <ul class="list-unstyled ps-3 mb-0">
+                    <li><span class="text-body fw-bold">2a) 不带没有执行力的学生。</span>我安排的任务，学生必须按时按量完成，否则一律不带。</li>
+                    <li><span class="text-body fw-bold">2b) 不带不想学习的学生。</span>但凡说“是我家里让我来学习的，不是我自己想来的”的学生，一律不带。</li>
+                    <li><span class="text-body fw-bold">2c) 不带不给反馈的学生。</span>教学活动中，学生不给反馈，对老师的提问保持沉默的学生，一律不带。</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li class="mt-1">学习习惯非常重要。我强制要求自己的学生带好三个本子：笔记本、错题本和默写本。</li>
+            <li class="mt-1">以下有每天每个时段的排课色块示意图。当鼠标移动到红色色块时，可以看到该色块翻转到对应的机构名（我已用名称缩写来保护各机构隐私）。</li>
+            <li class="mt-1">课程时间可以协商微调。既然能访问这个排课表，说明你知道我是谁、如何联系我。</li>
           </ol>
         </div>
       </fieldset>
     </div>
   </div>
+
   <div class="sticky-top sticky-header-wrapper shadow-sm border-bottom pb-3 pt-3 mb-4" id="main-header">
     <div class="container-fluid max-w-7xl px-4">
       <div class="row align-items-center mb-3 update-row">
         <div class="col-8 col-md-6 text-start">
           <h2 class="h6 mb-0 text-body">
-            此排课表更新于 <span class="fw-bold text-primary">5月22日 13:00</span>
+            此排课表更新于 <span class="fw-bold text-primary">5月24日 09:00</span>
           </h2>
         </div>
         <div class="col-4 col-md-6 text-end">
@@ -166,14 +184,11 @@
         <div class="summer-notice-box rounded-4 p-3 p-md-4 mb-4 shadow-sm">
           <div class="summer-notice-title fs-5 fw-bold mb-3">📢 暑期排课进度公告</div>
           <ol class="summer-notice-text mb-0 ps-3 lh-lg fw-medium" style="font-size: 0.95rem;">
-            <li>2026年暑期排课进行中，欢迎预约 ^_^ </li>
+            <li>2026年暑期分三期排课。</li>
             <li>截至目前已有的排课安排有：
               <ul class="list-unstyled ps-4 mt-1 mb-0">
                 <li>1）7月11日 - 7月28日，班课一期，初三升高一，每日具体上课时间待定。</li>
                 <li>2）7月6日 - 7月22日，班课一期，高二升高三，每日具体上课时间待定。</li>
-                <li>3）7月6日 - 7月22日，班课一期，初一升初二，每日具体上课时间待定。</li>
-                <p>初一升初二已招满一个班，暑期不再招生。</p>
-              
               </ul>
             </li>
           </ol>
@@ -371,3 +386,5 @@
   </script>
 </body>
 </html>
+
+```
