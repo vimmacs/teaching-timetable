@@ -23,7 +23,10 @@
     .text-success-emphasis { color: #1e7e34 !important; }
     .border-success { border-color: #c3e6cb !important; }
     [data-bs-theme="dark"] .bg-success-subtle { background-color: rgba(30, 126, 52, 0.2) !important; color: #81c784 !important; }
-    @media (min-width: 992px) { .cols-lg-7 > * { flex: 0 0 auto; width: 14.285714%; } }
+
+    @media (min-width: 992px) {
+      .cols-lg-7 > * { flex: 0 0 auto; width: 14.285714%; }
+    }
     .sticky-header-wrapper { background-color: var(--bs-body-bg); top: 0; z-index: 1020; transition: padding 0.3s ease, box-shadow 0.3s ease; }
     .hover-scale { transition: all 0.2s ease-in-out; cursor: pointer; }
     .hover-scale:hover { transform: scale(1.02); filter: brightness(0.95); }
@@ -31,6 +34,7 @@
     .week-card:hover { background-color: var(--bs-body-bg) !important; box-shadow: 0 0.75rem 1.5rem rgba(0,0,0,0.06) !important; transform: translateY(-2px); }
     [data-bs-theme="dark"] .week-card { background-color: #161b22 !important; border-color: #30363d !important; }
     [data-bs-theme="dark"] .week-card:hover { background-color: #1c2128 !important; }
+    
     #scrollToTopBtn { position: fixed; bottom: 30px; right: 30px; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; z-index: 1050; opacity: 0; transform: translateY(20px); pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.2s ease; }
     #scrollToTopBtn.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
     .past-mask { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(var(--bs-body-bg-rgb), 0.85); backdrop-filter: blur(2.5px); z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
@@ -41,27 +45,46 @@
     .flip-front, .flip-back { width: 100%; backface-visibility: hidden; }
     .flip-back { position: absolute; top: 0; left: 0; height: 100%; transform: rotateY(180deg); display: flex; align-items: center; justify-content: center; }
     #theme-toggle { width: 38px; height: 38px; padding: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 1.1rem; transition: all 0.3s ease; }
+    
     .header-tabs { display: flex; flex-wrap: wrap; gap: 1rem; border: none; justify-content: center; }
     .header-tabs .nav-link { padding: 0.75rem 1.6rem; border-radius: 50px; font-size: 1.05rem; font-weight: 800; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 6px rgba(0,0,0,0.08); border: 2px solid transparent; letter-spacing: 0.5px; white-space: nowrap; }
     .header-tabs .nav-link:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.12); }
     .header-tabs .nav-link:active { transform: translateY(1px); }
+    
     .btn-tab-yellow { background-color: #fff3cd !important; color: #856404 !important; }
     .btn-tab-yellow:hover { background-color: #ffe8a1 !important; }
     .btn-tab-yellow.active, .btn-tab-yellow.active:hover { background-color: #ffc107 !important; color: #000 !important; border-color: #ffc107; box-shadow: 0 6px 15px rgba(255, 193, 7, 0.3); }
     [data-bs-theme="dark"] .btn-tab-yellow { background-color: rgba(255, 193, 7, 0.2) !important; color: #ffda6a !important; }
     [data-bs-theme="dark"] .btn-tab-yellow.active { background-color: #ffc107 !important; color: #000 !important; }
+
     .btn-tab-blue { background-color: #e7f0ff !important; color: #0d6efd !important; }
     .btn-tab-blue:hover { background-color: #cce0ff !important; }
     .btn-tab-blue.active, .btn-tab-blue.active:hover { background-color: #0d6efd !important; color: #ffffff !important; border-color: #0d6efd; box-shadow: 0 6px 15px rgba(13, 110, 253, 0.3); }
     [data-bs-theme="dark"] .btn-tab-blue { background-color: rgba(13, 110, 253, 0.2) !important; color: #6ea8fe !important; }
     [data-bs-theme="dark"] .btn-tab-blue.active { background-color: #0d6efd !important; color: #fff !important; }
+    
     .btn-tab-red { background-color: #ffe8eb !important; color: #dc3545 !important; }
     .btn-tab-red:hover { background-color: #f8d7da !important; }
     .btn-tab-red.active, .btn-tab-red.active:hover { background-color: #dc3545 !important; color: #ffffff !important; border-color: #dc3545; box-shadow: 0 6px 15px rgba(220, 53, 69, 0.3); }
     [data-bs-theme="dark"] .btn-tab-red { background-color: rgba(220, 53, 69, 0.2) !important; color: #ea868f !important; }
     [data-bs-theme="dark"] .btn-tab-red.active { background-color: #dc3545 !important; color: #fff !important; }
+
     .notice-text { font-size: 1.05rem; line-height: 1.8; color: var(--bs-body-color); }
     @media (min-width: 768px) { .notice-text { font-size: 1.15rem; line-height: 2; } }
+
+    .summer-notice-box { background-color: rgba(111, 66, 193, 0.06); border: 1px solid rgba(111, 66, 193, 0.15); transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+    [data-bs-theme="dark"] .summer-notice-box { background-color: rgba(111, 66, 193, 0.15); border-color: rgba(111, 66, 193, 0.3); }
+    .summer-notice-title { color: #5a32a3; transition: color 0.35s ease; }
+    [data-bs-theme="dark"] .summer-notice-title { color: #c29ffa; }
+    .summer-notice-text { color: #4a2985; transition: color 0.35s ease; }
+    [data-bs-theme="dark"] .summer-notice-text { color: #d1bbfc; }
+    .summer-notice-box:hover { background-color: #6f42c1 !important; border-color: #6f42c1; box-shadow: 0 0.5rem 1.5rem rgba(111, 66, 193, 0.2) !important; cursor: pointer; }
+    .summer-notice-box:hover .summer-notice-title { color: #ffffff !important; }
+    .summer-notice-box:hover .summer-notice-text { color: #f3e8ff !important; }
+    [data-bs-theme="dark"] .summer-notice-box:hover { background-color: #522e94 !important; border-color: #522e94; box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.3) !important; }
+    [data-bs-theme="dark"] .summer-notice-box:hover .summer-notice-title { color: #ffffff !important; }
+    [data-bs-theme="dark"] .summer-notice-box:hover .summer-notice-text { color: #eadaff !important; }
+
     @media (max-width: 991.98px) {
       .header-tabs { width: 100%; gap: 0.5rem; justify-content: center; }
       .header-tabs .nav-item { flex: 1 1 auto; text-align: center; }
@@ -75,7 +98,7 @@
 </head>
 <body class="py-4">
   <div class="container-fluid max-w-7xl px-4">
-    <h1 class="text-center text-body fw-bold mb-3 mt-2">2026 -2027年度第一学期可排课时间</h1>
+    <h1 class="text-center text-body fw-bold mb-3 mt-2">2025-2026年度第二学期可排课时间</h1>
     <p class="text-danger fw-bold text-center mb-4 pb-2 fs-5" style="color: var(--bs-danger) !important;">
       如果您有任何课程安排，请立即与我联系。
     </p>
@@ -86,7 +109,7 @@
       <div class="row align-items-center mb-3 update-row">
         <div class="col-8 col-md-6 text-start">
           <h2 class="h6 mb-0 text-body">
-            此排课表更新于 <span class="fw-bold text-primary">7月7日 10:30</span>
+            此排课表更新于 <span class="fw-bold text-primary">8月21日 12:00</span>
           </h2>
         </div>
         <div class="col-4 col-md-6 text-end">
@@ -105,12 +128,12 @@
             </li>
             <li class="nav-item" role="presentation">
               <button class="nav-link active btn-tab-red" id="summer-tab" data-bs-toggle="tab" data-bs-target="#summer" type="button" role="tab" aria-controls="summer" aria-selected="true">
-                🏖️ 暑期排课表
+                📊 学期内排课总览
               </button>
             </li>
             <li class="nav-item" role="presentation">
               <button class="nav-link btn-tab-blue" id="semester-tab" data-bs-toggle="tab" data-bs-target="#semester" type="button" role="tab" aria-controls="semester" aria-selected="false">
-                📖 学期内排课
+                📖 学期内排课细节
               </button>
             </li>
           </ul>
@@ -135,6 +158,7 @@
 
   <div class="container-fluid max-w-7xl px-4">
     <div class="tab-content" id="scheduleTabsContent">
+      
       <div class="tab-pane fade" id="notice" role="tabpanel" aria-labelledby="notice-tab">
         <div class="card border-0 shadow-sm rounded-4 mb-4 bg-body-tertiary">
           <div class="card-body p-4 p-md-5">
@@ -145,11 +169,13 @@
               <p class="mb-3">但以上已经是过去时。<strong>从2026年7月开始，我将逐渐转为一名纯粹独立的英语老师。</strong></p>
               <p class="mb-3">不论是在学术层面还是在实践层面，我都积累了一套强烈的个人教学理念和模式。这些理念往往跟一些课外机构的理念相冲突，所以很简单：我想自己出来单干。<strong>我绝不接受任何合作机构对我教学活动的干涉，包括机构参考其他英语老师的做法，要求我这样那样。</strong></p>
               <p class="mb-4">目前我已有在合作中的机构，我会继续执行合作计划，直至合作结束。而目前合作结束或即将结束的机构，我会考虑不再合作，但请知晓，这并不是贵机构不优秀，而是在下太另类。</p>
+
               <p class="fw-bold mb-2 fs-5 mt-4 text-warning-emphasis">【二】教学定位与特色</p>
               <ol class="ps-3 mb-4">
                 <li>我专注于高考与高中教学辅导，其次也带少量中考学生。</li>
                 <li>我的教学带有明显的个人风格，自创概念术语，自创模型，应试性强。因此存在<strong>“对高一学生讲授的学习方法跟对高三学生讲授的学习方法完全不同甚至截然相反”</strong>的情形，此乃正常现象。</li>
               </ol>
+
               <p class="fw-bold mb-2 fs-5 mt-4 text-warning-emphasis">【三】能力边界与“三不带”底线</p>
               <p class="mb-2">我有能力边界，我不是万人迷式的英语老师，做不到让每个学生都满意。有学生喜欢我，就一定有学生不喜欢我，此亦正常。因此，我有严格的师生双向选择底线：</p>
               <ol class="ps-3 mb-4">
@@ -162,6 +188,7 @@
                   </ul>
                 </li>
               </ol>
+
               <p class="fw-bold mb-2 fs-5 mt-4 text-warning-emphasis">【四】排课表阅读指南</p>
               <ol class="ps-3 mb-0">
                 <li>以下有每天每个时段的排课色块示意图。当鼠标移动到红色色块时，可以看到该色块翻转到对应的机构名（我已用名称缩写来保护各机构隐私）。</li>
@@ -174,28 +201,30 @@
 
       <div class="tab-pane fade show active" id="summer" role="tabpanel" aria-labelledby="summer-tab">
         <div class="mb-4 text-body">
-          <div class="fs-5 fw-bold mb-3">📢 暑期排课进度公告</div>
-          <ol class="mb-0 ps-3 lh-lg fw-medium" style="font-size: 0.95rem;">
-            <li>2026年暑期分三期排课。</li>
-            <li>截至7月8日，剩余可排课的时间档位：
-              <ul class="list-unstyled ps-2 mt-2 mb-0">
-                <li class="mb-2 d-flex align-items-center">
-                  <div class="bg-success rounded-1 me-2 shadow-sm" style="width: 14px; height: 14px; flex-shrink: 0; box-shadow: 0 0 0 1px rgba(25, 135, 84, 0.2);"></div>
-                  1. 每日上午10 - 12点。
-                </li>
-                <li class="d-flex align-items-center">
-                  <div class="bg-success rounded-1 me-2 shadow-sm" style="width: 14px; height: 14px; flex-shrink: 0; box-shadow: 0 0 0 1px rgba(25, 135, 84, 0.2);"></div>
-                  2. 每日下午4 - 6点。
-                </li>
-              </ul>
-            </li>
-          </ol>
+          <div class="fs-5 fw-bold mb-3">📢 学期内排课总览</div>
+          <div class="mb-0 ps-3 lh-lg fw-medium" style="font-size: 0.95rem;">
+            2026-2027年度（2026年下半年至2027年上半年）的排课主要分三档：
+            <ul class="list-unstyled ps-2 mt-2 mb-0">
+              <li class="mb-2 d-flex align-items-center">
+                <div class="bg-success rounded-1 me-2 shadow-sm" style="width: 14px; height: 14px; flex-shrink: 0; box-shadow: 0 0 0 1px rgba(25, 135, 84, 0.2);"></div>
+                1）周一至周五的白天，全日制课。
+              </li>
+              <li class="mb-2 d-flex align-items-center">
+                <div class="bg-success rounded-1 me-2 shadow-sm" style="width: 14px; height: 14px; flex-shrink: 0; box-shadow: 0 0 0 1px rgba(25, 135, 84, 0.2);"></div>
+                2）周一至周五的晚上，晚课。
+              </li>
+              <li class="d-flex align-items-center">
+                <div class="bg-success rounded-1 me-2 shadow-sm" style="width: 14px; height: 14px; flex-shrink: 0; box-shadow: 0 0 0 1px rgba(25, 135, 84, 0.2);"></div>
+                3）周六和周日，以及节假日，常规培训课。
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
 
       <div class="tab-pane fade" id="semester" role="tabpanel" aria-labelledby="semester-tab">
         <div class="alert bg-success-subtle border-success border text-success-emphasis text-center rounded-4 shadow-sm py-3 mb-4">
-          <span class="fs-5 fw-bold">🎉 欢迎预约26下半年排课！</span>
+          <span class="fs-5 fw-bold">以下内容更新于2026年8月21日，🎉 欢迎预约26下半年排课！</span>
         </div>
         <div id="semester-active-container" class="d-flex flex-column gap-4 mb-4"></div>
         <div id="semester-past-container" class="mb-4"></div>
